@@ -495,44 +495,51 @@ function CurrentAffairs() {
                     <div className="h-4 w-5/6 animate-pulse rounded bg-gray-800" />
                     <div className="h-4 w-full animate-pulse rounded bg-gray-800" />
                     <div className="h-4 w-4/6 animate-pulse rounded bg-gray-800" />
-                    <p className="text-center text-xs text-gray-500 uppercase tracking-widest">Processing UPSC-style summary...</p>
+                    <p className="text-center text-xs text-gray-500 uppercase tracking-widest font-bold">Hardening UPSC Summary...</p>
                   </div>
-                ) : fullArticle?.intro ? (
-                  <div className="space-y-6">
+                ) : fullArticle?.overview ? (
+                  <div className="space-y-8 max-w-[680px] mx-auto">
                     <div>
-                      <h3 className="text-sm font-black uppercase tracking-wider text-blue-500 mb-2">Overview</h3>
-                      <p className="text-gray-300 leading-relaxed">{fullArticle.intro}</p>
+                      <h3 className="text-base font-black uppercase tracking-tighter text-blue-500 mb-2.5">Overview</h3>
+                      <p className="text-gray-300 leading-relaxed text-[17px]">{fullArticle.overview}</p>
                     </div>
 
                     {fullArticle.points?.length > 0 && (
                       <div>
-                        <h3 className="text-sm font-black uppercase tracking-wider text-blue-500 mb-3">Key Facts & Figures</h3>
-                        <ul className="space-y-3">
+                        <h3 className="text-base font-black uppercase tracking-tighter text-blue-500 mb-4">Key Points</h3>
+                        <ul className="space-y-4">
                           {fullArticle.points.map((p, i) => (
-                            <li key={i} className="flex items-start gap-3 text-gray-300">
-                              <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-500" />
-                              <span className="leading-relaxed">{p}</span>
+                            <li key={i} className="flex items-start gap-4 text-gray-300">
+                              <span className="mt-2.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)]" />
+                              <span className="leading-relaxed text-[16px]">{p}</span>
                             </li>
                           ))}
                         </ul>
                       </div>
                     )}
 
-                    {fullArticle.conclusion && (
-                      <div className="rounded-2xl bg-blue-500/5 p-5 border border-blue-500/10">
-                        <h3 className="text-sm font-black uppercase tracking-wider text-blue-500 mb-2">Key Takeaway</h3>
-                        <p className="text-gray-300 leading-relaxed italic">"{fullArticle.conclusion}"</p>
+                    {fullArticle.why && (
+                      <div className="rounded-3xl bg-blue-600/10 p-6 border border-blue-500/20 shadow-inner">
+                        <h3 className="text-base font-black uppercase tracking-tighter text-blue-400 mb-3 flex items-center gap-2">
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                          </svg>
+                          Why It Matters
+                        </h3>
+                        <p className="text-gray-200 leading-relaxed text-[16px] font-medium">{fullArticle.why}</p>
                       </div>
                     )}
                   </div>
                 ) : fullArticle?.error ? (
-                    <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-center">
-                        <p className="text-red-400">Unable to structure the full article. Direct scraping may be blocked by the source.</p>
-                        <p className="mt-2 text-sm text-gray-400">{selectedArticle.description}</p>
+                    <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-6 text-center">
+                        <p className="text-red-400 font-semibold">UPSC Analysis Unavailable</p>
+                        <p className="mt-2 text-sm text-gray-400 leading-relaxed">The source website is blocking our automated analysis pipeline. You can still read the original article using the link below.</p>
+                        <p className="mt-4 p-3 bg-white/5 rounded-xl text-xs text-gray-500 italic">{selectedArticle.description}</p>
                     </div>
                 ) : (
-                  <p className="text-gray-300 leading-relaxed">{selectedArticle.description}</p>
+                  <p className="text-gray-300 leading-relaxed text-[17px]">{selectedArticle.description}</p>
                 )}
+
 
               </div>
               

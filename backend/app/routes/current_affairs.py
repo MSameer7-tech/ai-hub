@@ -31,11 +31,12 @@ def get_full_article(url: str):
         "title": article_data["title"],
         "authors": article_data["authors"],
         "publish_date": article_data["publish_date"],
-        "intro": structured["intro"],
+        "overview": structured["overview"],
         "points": structured["points"],
-        "conclusion": structured["conclusion"],
+        "why": structured["why"],
         "url": url
     }
+
 
 
 

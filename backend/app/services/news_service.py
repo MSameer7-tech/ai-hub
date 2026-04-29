@@ -368,8 +368,19 @@ def clean_article_text(text: str) -> str:
         return ""
 
     # Normalize whitespace
-    text = text.replace("\r", "\n")
-    lines = text.split("\n")
+    text = re.sub(r"\s+", " ", text)
+    
+    # Simple heuristic to remove redundant repeated words/phrases
+    words = text.split()
+    cleaned_words = []
+    for i, w in enumerate(words):
+        # If the same word repeats 3 times in a row, skip it
+        if i > 2 and w.lower() == words[i-1].lower() == words[i-2].lower():
+            continue
+        cleaned_words.append(w)
+    
+    text = " ".join(cleaned_words)
+    lines = text.split(". ")
 
     cleaned_lines = []
     for line in lines:
@@ -393,11 +404,12 @@ def clean_article_text(text: str) -> str:
             "terms of use",
             "privacy policy",
             "copyright",
+            "all rights reserved",
         ]):
             continue
 
         # ❌ Remove weird broken repeated lines or very short junk
-        if len(line) < 25:
+        if len(line) < 30:
             continue
 
         cleaned_lines.append(line)
@@ -406,13 +418,11 @@ def clean_article_text(text: str) -> str:
     seen = set()
     unique_lines = []
     for line in cleaned_lines:
-        if line not in seen:
-            seen.add(line)
+        if line.lower() not in seen:
+            seen.add(line.lower())
             unique_lines.append(line)
 
-    # Join into paragraphs
-    cleaned_text = "\n\n".join(unique_lines)
-    return cleaned_text.strip()
+    return ". ".join(unique_lines).strip()
 
 def fetch_full_article(url: str):
     """
@@ -441,46 +451,51 @@ def fetch_full_article(url: str):
 
 def structure_article(text: str) -> dict:
     """
-    Convert cleaned text into UPSC-friendly structure:
-    Intro, Key Points, Conclusion.
+    Convert cleaned text into STRICT UPSC-friendly structure:
+    Overview, Key Points, Why It Matters.
     Deterministic/Rule-based only.
     """
     if not text:
-        return {"intro": "", "points": [], "conclusion": ""}
+        return {"overview": "", "points": [], "why": ""}
 
-    # Split into sentences (simple period based)
-    sentences = [s.strip() for s in text.split(". ") if len(s.strip()) > 5]
+    # Split into sentences
+    sentences = [s.strip() for s in text.split(". ") if len(s.strip()) > 10]
 
     if not sentences:
-        return {"intro": "", "points": [], "conclusion": ""}
+        return {"overview": "", "points": [], "why": ""}
 
-    # Intro = first 2 meaningful sentences
-    intro = ". ".join(sentences[:2]).strip()
-    if not intro.endswith("."):
-        intro += "."
+    # 1. Overview (max 3 sentences)
+    overview = ". ".join(sentences[:3]).strip()
+    if overview and not overview.endswith("."):
+        overview += "."
 
-    # Key points = sentences containing numbers, %, currencies, or key UPSC keywords
-    keywords = ["%", "USD", "billion", "million", "growth", "market", "India", "Government", "Policy", "economy", "GDP"]
+    # 2. Key Points (3-5 bullet points)
+    # Target sentences with numbers, %, currencies, or key UPSC keywords
+    keywords = ["%", "USD", "billion", "million", "growth", "market", "India", "Government", "Policy", "economy", "GDP", "election"]
     points = []
     
-    for s in sentences:
+    # Start looking after the overview sentences
+    for s in sentences[3:]:
         if any(k.lower() in s.lower() for k in keywords):
-            # Avoid too short or too long lines
-            if 40 < len(s) < 300:
+            if 40 < len(s) < 250:
                 clean_s = s.strip()
-                if clean_s not in points:
+                if clean_s.lower() not in [p.lower() for p in points]:
                     points.append(clean_s)
         
         if len(points) >= 5:
             break
 
-    # Conclusion = last meaningful sentence
-    conclusion = sentences[-1].strip()
-    if not conclusion.endswith("."):
-        conclusion += "."
+    # 3. Why It Matters (last or second to last meaningful sentence)
+    why = sentences[-1].strip()
+    if len(sentences) > 5:
+        # Often the penultimate sentence is more descriptive of impact
+        why = sentences[-2].strip()
+        
+    if why and not why.endswith("."):
+        why += "."
 
     return {
-        "intro": intro,
+        "overview": overview,
         "points": points,
-        "conclusion": conclusion
+        "why": why
     }
