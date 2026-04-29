@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException
 from app.models.schemas import CurrentAffairsQueryRequest, AskArticleRequest
 from app.services.llm_service import get_contextual_response, generate_response
 from app.services.news_service import cached_news, get_news_context
-from app.services.quiz_service import generate_quiz_cached
+
 
 router = APIRouter()
 
@@ -12,7 +12,7 @@ router = APIRouter()
 @router.get("/current-affairs")
 def get_current_affairs(refresh: bool = False) -> list[dict[str, str]]:
     if refresh:
-        generate_quiz_cached.cache_clear()
+
         return cached_news(force_refresh=True, background_refresh=True)
 
     return cached_news(background_refresh=True)

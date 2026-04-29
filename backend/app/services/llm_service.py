@@ -242,58 +242,6 @@ def get_contextual_response(context: str, question: str) -> str:
         max_tokens=150,
     )
 
-def get_answer_explanation(
-    question: str,
-    correct_answer: str,
-    user_answer: str,
-    is_correct: bool,
-) -> str:
-    verdict = "correct" if is_correct else "incorrect"
-    return generate_response(
-        system_prompt="Explain quiz answers in 2 short sentences.",
-        user_prompt=(
-            f"The user's answer is {verdict}.\n"
-            f"Question: {question}\n"
-            f"Correct answer: {correct_answer}\n"
-            f"User answer: {user_answer}"
-        ),
-        max_tokens=100,
-    )
-
-def evaluate_quiz_answer(
-    question: str,
-    correct_answer: str,
-    user_answer: str,
-) -> dict[str, str | bool]:
-    raw = generate_response(
-        system_prompt=(
-            "Evaluate quiz answers. Return ONLY valid JSON with keys "
-            '"correct" and "explanation". Mark mostly or partially correct "answers" as true.'
-        ),
-        user_prompt=f"""
-Question: {question}
-Correct Answer: {correct_answer}
-User Answer: {user_answer}
-
-JSON:
-{{"correct": true, "explanation": "short explanation"}}
-""",
-        max_tokens=100,
-        use_cache=False,
-    )
-    try:
-        parsed_response = _extract_json_object(raw)
-        return {
-            "correct": bool(parsed_response.get("correct", False)),
-            "explanation": _clean_text(parsed_response.get("explanation", "")),
-        }
-    except Exception as exc:
-        print("Quiz evaluation parse error:", exc)
-        return {
-            "correct": False,
-            "explanation": "Unable to evaluate the answer right now.",
-        }
-
 def generate_chat_title(message: str) -> str:
     title = generate_response(
         system_prompt=(
@@ -305,6 +253,7 @@ def generate_chat_title(message: str) -> str:
         max_tokens=20,
     )
     return title.strip().strip('"')[:60] or "New Chat"
+
 
 def _clean_text(text: str) -> str:
     return " ".join(str(text or "").strip().split())
