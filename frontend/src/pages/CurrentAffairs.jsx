@@ -335,7 +335,7 @@ function CurrentAffairs({ theme, setTheme }) {
                   </button>
                   </motion.div>
                 </article>
-              ))}
+                )))}
             </div>
           )}
         </section>
@@ -482,7 +482,7 @@ function CurrentAffairs({ theme, setTheme }) {
                               <span className="mt-2.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)]" />
                               <span className="leading-relaxed text-[16px]">{p}</span>
                             </li>
-                          ))}
+                           ))}
                         </ul>
                       </div>
                     )}
