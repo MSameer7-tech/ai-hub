@@ -214,15 +214,6 @@ function CurrentAffairs() {
   };
 
 
-  const handleRefresh = async () => {
-    if (cooldown > 0) {
-      return;
-    }
-
-    await fetchArticles(true);
-    setCooldown(REFRESH_INTERVAL);
-  };
-
   return (
     <div className="flex-1 overflow-y-auto p-6 text-gray-800 dark:text-white">
       <div>
