@@ -80,36 +80,41 @@ def ask_article(request: AskArticleRequest) -> dict:
     # Trim content slightly more for faster processing and lower token usage
     content = content[:3000]
 
-    # Detect if the question is analytical or factual
-    is_analytical = any(kw in question.lower() for kw in ["analyze", "significance", "why", "impact", "explain", "importance"])
-
     prompt = f"""
-You are a UPSC Current Affairs Expert. Answer the question strictly based on the article provided.
+You are a UPSC-focused current affairs analyst.
+Analyze the given news article and respond in STRICT structured format.
 
-FORMAT YOUR RESPONSE EXACTLY LIKE THIS:
+FORMAT (MANDATORY)
 
-Answer:
-(2–3 lines direct, crisp answer)
+Context (2–3 lines):
+Briefly explain what the news is about.
 
-Key Points:
-- [Fact 1]
-- [Fact 2]
-- [Fact 3]
+Key Facts:
+- Fact 1
+- Fact 2
+- Fact 3
 
-{ "Significance:\n- [Analytical Point 1]\n- [Analytical Point 2]" if is_analytical else "" }
+Why it matters (UPSC relevance):
+- Point 1
+- Point 2
+- Point 3
 
-STRICT RULES:
-1. Do NOT use outside information.
-2. Do NOT write long paragraphs.
-3. Be exam-ready and concise.
-4. If information is missing, say "Data not in article." once at the end.
+Exam Linkage:
+Mention relevant UPSC subjects (Polity, Economy, IR, Environment, etc.)
+
+Potential Question:
+Frame 1 UPSC-style question (Prelims or Mains)
+
+RULES:
+- DO NOT write paragraphs
+- USE bullet points for facts and relevance
+- KEEP it concise
+- NO generic filler
+- If data missing → do NOT hallucinate, say "Not mentioned"
 
 ARTICLE:
 Title: {article.get('title', 'No Title')}
-{content}
-
-QUESTION:
-{question}
+Content: {content}
 """
 
 

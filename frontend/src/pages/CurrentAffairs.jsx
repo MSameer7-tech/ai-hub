@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 
 import { askCurrentAffairs, askArticle } from "../services/api";
@@ -50,6 +50,7 @@ function CurrentAffairs({ theme, setTheme }) {
   const [fullArticle, setFullArticle] = useState(null);
   const [isFetchingFull, setIsFetchingFull] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const analysisRef = useRef(null);
 
   const fetchArticles = async (isManualRefresh = false) => {
     setLoading(true);
@@ -188,6 +189,15 @@ function CurrentAffairs({ theme, setTheme }) {
     
     setHistory((prev) => [...prev, { q: questionText, a: "Thinking..." }]);
     setQuestion(""); // Clear input after asking
+    setIsAsking(true); // Shared loading state for bottom UI
+
+    // Smooth scroll to analysis section
+    setTimeout(() => {
+        analysisRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+    }, 100);
     
     try {
       const response = await askArticle(questionText, contextTopic);
@@ -332,7 +342,10 @@ function CurrentAffairs({ theme, setTheme }) {
           )}
         </section>
 
-        <section className="relative mt-12 rounded-[40px] border border-gray-100 bg-gray-50/30 p-8 dark:border-white/5 dark:bg-white/5 dark:backdrop-blur-3xl">
+        <section 
+          ref={analysisRef}
+          className="relative mt-12 rounded-[40px] border border-gray-100 bg-gray-50/30 p-8 dark:border-white/5 dark:bg-white/5 dark:backdrop-blur-3xl"
+        >
           <div className="absolute inset-x-0 -top-10 flex justify-center">
             <div className="h-px w-2/3 bg-gradient-to-r from-transparent via-gray-200 to-transparent dark:via-white/10" />
           </div>
@@ -376,17 +389,21 @@ function CurrentAffairs({ theme, setTheme }) {
                   className="rounded-[32px] border border-gray-100 bg-white p-8 shadow-sm transition-all hover:shadow-md dark:border-white/5 dark:bg-[#111827]/80 dark:backdrop-blur-xl"
                 >
                   <div className="mb-5 flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-500">Analysis Session</span>
+                    <span className={`h-1.5 w-1.5 rounded-full ${item.a === "Thinking..." ? "bg-blue-500 animate-ping" : "bg-green-500 animate-pulse"}`} />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-500">
+                        {item.a === "Thinking..." ? "Analyzing Data..." : "Analysis Session"}
+                    </span>
                   </div>
-                  <p className="mb-4 text-base font-bold leading-relaxed text-gray-900 dark:text-white">
-                    <span className="mr-3 text-sm font-black uppercase text-blue-600 dark:text-blue-400">Q:</span> 
+                  <p className="mb-4 text-base font-medium leading-relaxed text-blue-600 dark:text-blue-400">
+                    <span className="mr-3 text-sm font-black uppercase">Q:</span> 
                     {item.q}
                   </p>
-                  <p className="text-[15px] leading-relaxed text-gray-600 dark:text-neutral-300">
-                    <span className="mr-3 text-sm font-black uppercase text-purple-600 dark:text-purple-400">A:</span> 
-                    {item.a}
-                  </p>
+                  <div className="text-[15px] leading-relaxed text-green-700 dark:text-green-400">
+                    <span className="mr-3 text-sm font-black uppercase">A:</span> 
+                    <div className="inline space-y-2 whitespace-pre-wrap leading-relaxed font-medium">
+                        {item.a}
+                    </div>
+                  </div>
                 </div>
               ))
             )}
