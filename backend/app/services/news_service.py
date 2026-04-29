@@ -5,6 +5,7 @@ import threading
 import time
 
 import requests
+from newspaper import Article
 from dotenv import load_dotenv
 
 from app.services.llm_service import generate_response
@@ -361,3 +362,27 @@ def clear_news_cache() -> None:
         NEWS_CACHE["data"].clear()
         NEWS_CACHE["last_updated"].clear()
         NEWS_CACHE["refreshing"].clear()
+
+def fetch_full_article(url: str):
+    """
+    Scrape full article text using newspaper3k.
+    No LLM used.
+    """
+    try:
+        article = Article(url)
+        article.download()
+        article.parse()
+
+        return {
+            "title": article.title,
+            "text": article.text,
+            "authors": article.authors,
+            "publish_date": str(article.publish_date) if article.publish_date else None,
+        }
+    except Exception as e:
+        print(f"Scraping error for {url}: {e}")
+        return {
+            "error": "Unable to fetch full article",
+            "details": str(e)
+        }
+

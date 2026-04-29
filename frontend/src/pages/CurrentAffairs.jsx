@@ -47,6 +47,8 @@ function CurrentAffairs() {
   const [cooldown, setCooldown] = useState(0);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [selectedArticle, setSelectedArticle] = useState(null);
+  const [fullArticle, setFullArticle] = useState(null);
+  const [isFetchingFull, setIsFetchingFull] = useState(false);
 
   const fetchArticles = async (refresh = false) => {
     setLoading(true);
@@ -79,6 +81,28 @@ function CurrentAffairs() {
       setLoading(false);
     }
   };
+
+  const fetchFullContent = async (url) => {
+    if (!url) return;
+    setIsFetchingFull(true);
+    setFullArticle(null);
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/news/full?url=${encodeURIComponent(url)}`);
+      const data = await res.json();
+      setFullArticle(data);
+    } catch (err) {
+      console.error("Failed to fetch full article:", err);
+      setFullArticle({ error: "Failed to load content" });
+    } finally {
+      setIsFetchingFull(false);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedArticle?.url) {
+      fetchFullContent(selectedArticle.url);
+    }
+  }, [selectedArticle]);
 
   useEffect(() => {
     const savedHistory = localStorage.getItem("currentAffairsHistory");
@@ -419,7 +443,10 @@ function CurrentAffairs() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            onClick={() => setSelectedArticle(null)}
+            onClick={() => {
+              setSelectedArticle(null);
+              setFullArticle(null);
+            }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4"
           >
             <motion.div
@@ -427,45 +454,86 @@ function CurrentAffairs() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.25 }}
-              style={{ maxWidth: "700px" }}
-              className="max-h-[85vh] w-full overflow-y-auto rounded-2xl border border-white/10 bg-[#111827]/90 p-8 shadow-2xl backdrop-blur-xl"
+              style={{ maxWidth: "750px" }}
+              className="max-h-[85vh] w-full overflow-y-auto rounded-3xl border border-white/10 bg-[#111827]/95 p-8 shadow-2xl backdrop-blur-2xl"
             >
-              <div className="mb-6 flex items-start justify-between gap-4 border-b border-white/10 pb-4">
-                <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-blue-400">
-                    {selectedArticle.tag || "News"}
-                  </span>
-                  <h2 className="mt-2 text-2xl font-bold leading-tight text-white">
-                    {selectedArticle.title}
+              <div className="mb-6 flex items-start justify-between gap-4 border-b border-white/10 pb-6">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-black uppercase tracking-widest text-blue-400">
+                      {selectedArticle.tag || "News"}
+                    </span>
+                    {fullArticle?.publish_date && (
+                        <span className="text-xs text-gray-500">• {new Date(fullArticle.publish_date).toLocaleDateString()}</span>
+                    )}
+                  </div>
+                  <h2 className="mt-3 text-3xl font-extrabold leading-tight text-white">
+                    {fullArticle?.title || selectedArticle.title}
                   </h2>
+                  {fullArticle?.authors?.length > 0 && (
+                      <p className="mt-2 text-sm text-gray-400 italic">By {fullArticle.authors.join(", ")}</p>
+                  )}
                 </div>
                 <button
                   type="button"
-                  onClick={() => setSelectedArticle(null)}
-                  className="rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-gray-300 transition hover:bg-gray-700 active:scale-95"
+                  onClick={() => {
+                    setSelectedArticle(null);
+                    setFullArticle(null);
+                  }}
+                  className="rounded-full bg-gray-800/50 p-2 text-gray-400 transition hover:bg-gray-700 hover:text-white active:scale-90"
                 >
-                  ✕
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               </div>
-              <p 
-                className="mt-4 whitespace-pre-line text-gray-300" 
-                style={{ fontSize: "16px", lineHeight: "1.7" }}
-              >
-                {selectedArticle.content || selectedArticle.description}
-              </p>
+
+              <div className="relative">
+                {isFetchingFull ? (
+                  <div className="space-y-4 py-8">
+                    <div className="h-4 w-full animate-pulse rounded bg-gray-800" />
+                    <div className="h-4 w-5/6 animate-pulse rounded bg-gray-800" />
+                    <div className="h-4 w-full animate-pulse rounded bg-gray-800" />
+                    <div className="h-4 w-4/6 animate-pulse rounded bg-gray-800" />
+                    <p className="text-center text-xs text-gray-500 uppercase tracking-widest">Fetching full content from source...</p>
+                  </div>
+                ) : fullArticle?.text ? (
+                  <div 
+                    className="prose prose-invert max-w-none whitespace-pre-wrap text-gray-300 leading-relaxed" 
+                    style={{ fontSize: "16px" }}
+                  >
+                    {fullArticle.text}
+                  </div>
+                ) : fullArticle?.error ? (
+                    <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-center">
+                        <p className="text-red-400">Unable to scrape the full article. The site may be blocking direct access.</p>
+                        <p className="mt-2 text-sm text-gray-400">{selectedArticle.description}</p>
+                    </div>
+                ) : (
+                  <p className="text-gray-300 leading-relaxed">{selectedArticle.description}</p>
+                )}
+              </div>
               
-              {selectedArticle.url && (
-                <div className="mt-8 pt-4 border-t border-white/10">
-                  <a 
+              <div className="mt-10 flex items-center justify-between border-t border-white/10 pt-6">
+                <a 
                     href={selectedArticle.url} 
                     target="_blank" 
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-500 hover:scale-105"
-                  >
-                    Read Full Article →
-                  </a>
-                </div>
-              )}
+                    className="inline-flex items-center gap-2 text-sm font-bold text-blue-400 transition hover:text-blue-300"
+                >
+                    View Original Source ↗
+                </a>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedArticle(null);
+                    setFullArticle(null);
+                  }}
+                  className="rounded-xl bg-gray-800 px-6 py-2.5 text-sm font-bold text-white transition hover:bg-gray-700"
+                >
+                  Close
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}

@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.models.schemas import CurrentAffairsQueryRequest, AskArticleRequest
 from app.services.llm_service import get_contextual_response, generate_response
-from app.services.news_service import cached_news, get_news_context
+from app.services.news_service import cached_news, get_news_context, fetch_full_article
 
 
 router = APIRouter()
@@ -16,6 +16,11 @@ def get_current_affairs(refresh: bool = False) -> list[dict[str, str]]:
         return cached_news(force_refresh=True, background_refresh=True)
 
     return cached_news(background_refresh=True)
+
+
+@router.get("/news/full")
+def get_full_article(url: str):
+    return fetch_full_article(url)
 
 
 @router.post("/current-affairs/query")
