@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
   { id: "chat", label: "Chat" },
@@ -20,6 +21,8 @@ function Sidebar({
   onTogglePin,
   search = "",
   onSearchChange,
+  isOpen = false,
+  onClose,
 }) {
   const handleNavigate = onNavigate ?? setPage;
   const [editingChatId, setEditingChatId] = useState(null);
@@ -41,15 +44,26 @@ function Sidebar({
     setTempTitle("");
   };
 
-  return (
-    <aside className="h-full w-72 shrink-0 border-r border-gray-200 bg-gray-100 p-6 transition-colors duration-300 dark:border-white/10 dark:bg-[#0a0f1c] dark:backdrop-blur-xl">
-      <div className="mb-10">
-        <h1 className="text-2xl font-black tracking-tight text-gray-900 dark:text-white">
-            AI <span className="text-blue-500">Hub</span>
-        </h1>
-        <p className="mt-1 text-xs font-medium text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
-          Conversations, news, and quiz
-        </p>
+  const sidebarContent = (
+    <div className="flex h-full w-full flex-col p-6">
+      <div className="mb-10 flex items-center justify-between">
+        <div>
+            <h1 className="text-2xl font-black tracking-tight text-gray-900 dark:text-white">
+                AI <span className="text-blue-500">Hub</span>
+            </h1>
+            <p className="mt-1 text-xs font-medium text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
+            Conversations, news, and quiz
+            </p>
+        </div>
+        <button
+            type="button"
+            onClick={onClose}
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-gray-400 hover:text-white md:hidden"
+        >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
       </div>
 
       <nav className="mb-6 flex flex-col gap-2">
@@ -94,7 +108,7 @@ function Sidebar({
         className="mb-4 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 outline-none transition-all duration-300 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-neutral-500"
       />
 
-      <div className="flex max-h-[calc(100vh-210px)] flex-col gap-2 overflow-y-auto pr-1">
+      <div className="flex-1 min-h-0 flex flex-col gap-2 overflow-y-auto pr-1">
         {sortedChats.map((chat) => {
           const isSelected = currentChatId === chat.id;
 
@@ -132,7 +146,7 @@ function Sidebar({
                 </button>
               )}
 
-              <div className="flex shrink-0 gap-1 opacity-0 transition-all duration-300 group-hover:opacity-100">
+              <div className={`flex shrink-0 gap-1 transition-all duration-300 ${isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
                 <button
                   type="button"
                   onClick={() => onTogglePin?.(chat.id)}
@@ -163,7 +177,35 @@ function Sidebar({
           );
         })}
       </div>
-    </aside>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <aside className="hidden h-full w-72 shrink-0 border-r border-gray-200 bg-gray-100 transition-colors duration-300 md:block dark:border-white/10 dark:bg-[#0a0f1c] dark:backdrop-blur-xl">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile Sidebar */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.aside
+            initial={{ x: "-100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed inset-y-0 left-0 z-[150] h-full w-72 border-r border-white/10 bg-black/95 shadow-2xl backdrop-blur-2xl md:hidden"
+          >
+            {sidebarContent}
+          </motion.aside>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+export default Sidebar;
 
   );
 }

@@ -219,44 +219,44 @@ function CurrentAffairs({ theme, setTheme }) {
 
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 text-gray-800 dark:text-white">
+    <div className="flex-1 overflow-y-auto p-4 md:p-6 text-gray-800 dark:text-white no-scrollbar">
       <div>
-        <div className="mb-10 flex flex-wrap items-center justify-between gap-6">
+        <div className="mb-8 md:mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
           <div className="flex-1">
-            <h1 className="text-4xl font-black tracking-tight text-gray-900 dark:text-white">
+            <h1 className="text-2xl md:text-4xl font-black tracking-tight text-gray-900 dark:text-white">
               Current <span className="text-blue-500">Affairs</span>
-              <span className="ml-3 rounded-lg bg-orange-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-orange-600 dark:text-orange-400">Manual Sync Mode</span>
+              <div className="mt-1 md:mt-0 md:ml-3 inline-block rounded-lg bg-orange-500/10 px-3 py-1 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-orange-600 dark:text-orange-400">Manual Sync Mode</div>
             </h1>
-            <p className="mt-2 text-gray-500 dark:text-neutral-400">
+            <p className="mt-2 text-xs md:text-sm text-gray-500 dark:text-neutral-400">
               Browse summaries and ask questions grounded in the current dataset.
             </p>
           </div>
           
           <div className="flex items-center gap-5">
-            <div className="flex flex-col items-end gap-1.5">
-                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-neutral-500">
+            <div className="flex flex-col items-start md:items-end gap-1.5 w-full md:w-auto">
+                <div className="flex items-center gap-2 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-neutral-500">
                     <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span>{lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString()}` : "Sync Pending"}</span>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 w-full md:w-auto">
                     <button
                         type="button"
                         onClick={handleRefresh}
                         disabled={cooldown > 0 || loading}
-                        className={`group flex items-center gap-2 rounded-full border-2 px-6 py-2.5 text-xs font-black uppercase tracking-widest transition-all duration-300 ${
+                        className={`group flex items-center justify-center gap-2 rounded-full border-2 px-5 md:px-6 py-2 md:py-2.5 text-[10px] md:text-xs font-black uppercase tracking-widest transition-all duration-300 w-full md:w-auto ${
                             cooldown > 0 || loading
                             ? "border-gray-100 bg-gray-50 text-gray-300 dark:border-white/5 dark:bg-white/5"
                             : "border-orange-500 text-orange-600 hover:bg-orange-600 hover:text-white dark:border-orange-500/50 dark:text-orange-400 dark:hover:bg-orange-600 dark:hover:text-white"
                         }`}
                     >
                         {loading && (
-                            <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="h-3 w-3 md:h-4 md:w-4 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
                         )}
-                        <span>{loading ? "Refreshing" : cooldown > 0 ? `Retry in ${cooldown}s` : "Refresh"}</span>
+                        <span>{loading ? "Refreshing" : cooldown > 0 ? `Retry ${cooldown}s` : "Refresh"}</span>
                     </button>
                 </div>
             </div>
@@ -264,32 +264,31 @@ function CurrentAffairs({ theme, setTheme }) {
         </div>
 
 
-        <section className="mb-12">
+        <section className="mb-8 md:mb-12">
           {loading ? (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 md:gap-6 md:grid-cols-2 xl:grid-cols-3">
               {Array.from({ length: 6 }).map((_, index) => (
                 <div
                   key={index}
-                  className="h-[380px] animate-pulse rounded-3xl border border-gray-100 bg-white p-8 dark:border-white/5 dark:bg-white/5"
+                  className="h-[300px] md:h-[380px] animate-pulse rounded-3xl border border-gray-100 bg-white p-6 md:p-8 dark:border-white/5 dark:bg-white/5"
                 >
                   <div className="mb-6 h-6 w-24 rounded-full bg-gray-200 dark:bg-white/10" />
                   <div className="mb-4 h-8 w-4/5 rounded-xl bg-gray-200 dark:bg-white/10" />
-                  <div className="mb-3 h-4 w-full rounded bg-gray-200 dark:bg-white/10" />
                   <div className="mb-3 h-4 w-full rounded bg-gray-200 dark:bg-white/10" />
                   <div className="mt-auto h-12 w-full rounded-2xl bg-gray-200 dark:bg-white/10" />
                 </div>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 md:gap-8 md:grid-cols-2 xl:grid-cols-3">
               {articles.length === 0 ? (
-                <div className="col-span-full flex flex-col items-center justify-center rounded-[40px] border-2 border-dashed border-gray-200 bg-white/50 p-20 dark:border-white/5 dark:bg-white/5">
-                   <p className="mb-6 text-sm font-bold uppercase tracking-[0.2em] text-gray-400">Data Feed Synchronized Manually</p>
+                <div className="col-span-full flex flex-col items-center justify-center rounded-[32px] md:rounded-[40px] border-2 border-dashed border-gray-200 bg-white/50 p-12 md:p-20 dark:border-white/5 dark:bg-white/5">
+                   <p className="mb-4 md:mb-6 text-[10px] md:text-sm font-bold uppercase tracking-[0.2em] text-gray-400">Manual Sync Required</p>
                    <button 
                     onClick={handleRefresh}
-                    className="rounded-2xl bg-orange-600 px-10 py-5 text-xs font-black uppercase tracking-widest text-white shadow-2xl shadow-orange-600/30 transition-all hover:scale-105 hover:bg-orange-700"
+                    className="rounded-2xl bg-orange-600 px-8 md:px-10 py-4 md:py-5 text-[10px] md:text-xs font-black uppercase tracking-widest text-white shadow-2xl shadow-orange-600/30 transition-all hover:scale-105 hover:bg-orange-700"
                    >
-                     Initialize News Feed
+                     Initialize Feed
                    </button>
                 </div>
               ) : (
@@ -299,27 +298,27 @@ function CurrentAffairs({ theme, setTheme }) {
                   className="h-full"
                 >
                   <motion.div
-                    whileHover={{ translateY: -12 }}
+                    whileHover={{ translateY: -8 }}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, ease: "easeOut" }}
                     onClick={() => setSelectedArticle(topic)}
-                    className="group flex h-full cursor-pointer flex-col rounded-[32px] border border-gray-100 bg-white p-8 shadow-sm transition-all duration-500 hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/10 dark:border-white/5 dark:bg-white/[0.03] dark:backdrop-blur-xl dark:hover:border-blue-500/40"
+                    className="group flex h-full cursor-pointer flex-col rounded-[24px] md:rounded-[32px] border border-gray-100 bg-white p-6 md:p-8 shadow-sm transition-all duration-500 hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/10 dark:border-white/5 dark:bg-white/[0.03] dark:backdrop-blur-xl dark:hover:border-blue-500/40"
                   >
-                  <div className="mb-6 flex items-center justify-between">
-                    <span className="rounded-full bg-blue-600 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-xl shadow-blue-500/40 transition-transform group-hover:scale-105">
+                  <div className="mb-4 md:mb-6 flex items-center justify-between">
+                    <span className="rounded-full bg-blue-600 px-3 md:px-4 py-1.5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white shadow-xl shadow-blue-500/40 transition-transform group-hover:scale-105">
                         {topic?.tag || getCategoryTag(topic)}
                     </span>
                   </div>
                   
                   <h3 
                     title={topic?.title}
-                    className="mb-4 text-xl font-extrabold leading-tight text-gray-900 line-clamp-2 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
+                    className="mb-3 md:mb-4 text-lg md:text-xl font-extrabold leading-tight text-gray-900 line-clamp-2 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
                   >
                     {topic?.title || "No title"}
                   </h3>
                   
-                  <p className="mb-8 text-sm leading-relaxed text-gray-500 line-clamp-3 dark:text-neutral-400">
+                  <p className="mb-6 md:mb-8 text-xs md:text-sm leading-relaxed text-gray-500 line-clamp-3 dark:text-neutral-400">
                     {topic?.description || "No description"}
                   </p>
                   
@@ -329,7 +328,7 @@ function CurrentAffairs({ theme, setTheme }) {
                       event.stopPropagation();
                       handleAskAboutTopic(topic);
                     }}
-                    className="mt-auto w-full rounded-2xl border-2 border-blue-500/40 py-4 text-[10px] font-black uppercase tracking-[0.15em] text-blue-600 transition-all duration-300 hover:scale-[1.02] hover:bg-blue-600 hover:text-white hover:shadow-xl hover:shadow-blue-500/20 dark:text-blue-400 dark:hover:bg-blue-600 dark:hover:text-white"
+                    className="mt-auto w-full rounded-xl md:rounded-2xl border-2 border-blue-500/40 py-3 md:py-4 text-[9px] md:text-[10px] font-black uppercase tracking-[0.15em] text-blue-600 transition-all duration-300 hover:scale-[1.02] hover:bg-blue-600 hover:text-white hover:shadow-xl hover:shadow-blue-500/20 dark:text-blue-400 dark:hover:bg-blue-600 dark:hover:text-white"
                   >
                     Analyze for UPSC
                   </button>
@@ -342,30 +341,30 @@ function CurrentAffairs({ theme, setTheme }) {
 
         <section 
           ref={analysisRef}
-          className="relative mt-12 rounded-[40px] border border-gray-100 bg-gray-50/30 p-8 dark:border-white/5 dark:bg-white/5 dark:backdrop-blur-3xl"
+          className="relative mt-8 md:mt-12 rounded-[32px] md:rounded-[40px] border border-gray-100 bg-gray-50/30 p-6 md:p-8 dark:border-white/5 dark:bg-white/5 dark:backdrop-blur-3xl"
         >
           <div className="absolute inset-x-0 -top-10 flex justify-center">
             <div className="h-px w-2/3 bg-gradient-to-r from-transparent via-gray-200 to-transparent dark:via-white/10" />
           </div>
 
-          <h2 className="mb-6 text-xl font-black tracking-tight text-gray-900 dark:text-white">
-            Study Deep: <span className="text-blue-500">Ask a Question</span>
+          <h2 className="mb-6 text-lg md:text-xl font-black tracking-tight text-gray-900 dark:text-white">
+            Study Deep: <span className="text-blue-500">Ask Question</span>
           </h2>
 
-          <div className="relative mb-8 flex flex-col gap-4 md:flex-row md:items-stretch">
+          <div className="relative mb-6 md:mb-8 flex flex-col gap-4 md:flex-row md:items-stretch">
             <textarea
               value={question}
               onChange={(event) => setQuestion(event.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask anything about the topics above..."
+              placeholder="Ask anything..."
               rows={1}
-              className="flex-1 resize-none rounded-2xl border border-gray-200 bg-white px-6 py-4 text-base text-gray-900 shadow-sm outline-none transition-all placeholder:text-gray-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-gray-700 dark:bg-[#111827]/50 dark:text-white dark:placeholder:text-white/20"
+              className="flex-1 resize-none rounded-xl md:rounded-2xl border border-gray-200 bg-white px-5 md:px-6 py-3 md:py-4 text-sm md:text-base text-gray-900 shadow-sm outline-none transition-all placeholder:text-gray-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-gray-700 dark:bg-[#111827]/50 dark:text-white dark:placeholder:text-white/20"
             />
             <button
               type="button"
               onClick={handleAskQuestion}
               disabled={!question.trim() || isAsking}
-              className={`rounded-2xl px-10 py-4 text-xs font-black uppercase tracking-widest transition-all duration-300 ${
+              className={`rounded-xl md:rounded-2xl px-8 md:px-10 py-3 md:py-4 text-[10px] md:text-xs font-black uppercase tracking-widest transition-all duration-300 ${
                 !question.trim() || isAsking
                   ? "bg-gray-100 text-gray-300 dark:bg-white/5 dark:text-neutral-700"
                   : "bg-blue-600 text-white shadow-lg shadow-blue-600/20 hover:scale-105 hover:bg-blue-700 active:scale-95"
@@ -375,29 +374,29 @@ function CurrentAffairs({ theme, setTheme }) {
             </button>
           </div>
 
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-4 md:gap-5">
             {history.length === 0 ? (
-              <div className="rounded-[32px] border border-dashed border-gray-200 bg-gray-50/50 p-10 text-center dark:border-white/5 dark:bg-white/5">
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 dark:text-neutral-600">Your conversation history will appear here</p>
+              <div className="rounded-[24px] md:rounded-[32px] border border-dashed border-gray-200 bg-gray-50/50 p-8 md:p-10 text-center dark:border-white/5 dark:bg-white/5">
+                <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 dark:text-neutral-600">History will appear here</p>
               </div>
             ) : (
               history.map((item, i) => (
                 <div
                   key={i}
-                  className="rounded-[32px] border border-gray-100 bg-white p-8 shadow-sm transition-all hover:shadow-md dark:border-white/5 dark:bg-[#111827]/80 dark:backdrop-blur-xl"
+                  className="rounded-[24px] md:rounded-[32px] border border-gray-100 bg-white p-6 md:p-8 shadow-sm transition-all hover:shadow-md dark:border-white/5 dark:bg-[#111827]/80 dark:backdrop-blur-xl"
                 >
-                  <div className="mb-5 flex items-center gap-2">
+                  <div className="mb-4 md:mb-5 flex items-center gap-2">
                     <span className={`h-1.5 w-1.5 rounded-full ${item.a === "Thinking..." ? "bg-blue-500 animate-ping" : "bg-green-500 animate-pulse"}`} />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-500">
-                        {item.a === "Thinking..." ? "Analyzing Data..." : "Analysis Session"}
+                    <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-blue-500">
+                        {item.a === "Thinking..." ? "Analyzing..." : "Analysis Session"}
                     </span>
                   </div>
-                  <p className="mb-4 text-base font-medium leading-relaxed text-blue-600 dark:text-blue-400">
-                    <span className="mr-3 text-sm font-black uppercase">Q:</span> 
+                  <p className="mb-4 text-sm md:text-base font-medium leading-relaxed text-blue-600 dark:text-blue-400">
+                    <span className="mr-2 md:mr-3 text-xs md:text-sm font-black uppercase">Q:</span> 
                     {item.q}
                   </p>
-                  <div className="text-[15px] leading-relaxed text-green-700 dark:text-green-400">
-                    <span className="mr-3 text-sm font-black uppercase">A:</span> 
+                  <div className="text-xs md:text-[15px] leading-relaxed text-green-700 dark:text-green-400">
+                    <span className="mr-2 md:mr-3 text-xs md:text-sm font-black uppercase">A:</span> 
                     <div className="inline space-y-2 whitespace-pre-wrap leading-relaxed font-medium">
                         {item.a}
                     </div>

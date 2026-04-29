@@ -248,62 +248,100 @@ export default function App() {
     return b.createdAt - a.createdAt;
   });
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
     <div className={theme === "dark" ? "dark" : ""}>
-    <div className="flex h-screen w-screen flex-col bg-white text-gray-900 transition-colors duration-300 dark:bg-black dark:text-white">
-      <div className="flex min-h-0 flex-1 bg-gray-50 dark:bg-black">
+      <div className="flex h-screen w-screen flex-col bg-white text-gray-900 transition-colors duration-300 dark:bg-black dark:text-white">
+        
+        {/* Mobile Header */}
+        <div className="flex items-center justify-between border-b border-gray-200 bg-white/80 px-4 py-3 backdrop-blur-xl md:hidden dark:border-white/5 dark:bg-black/80">
+          <button
+            type="button"
+            onClick={() => setIsSidebarOpen(true)}
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-gray-400"
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <h1 className="text-lg font-black tracking-tighter text-gray-900 dark:text-white">
+            AI <span className="text-blue-500">Hub</span>
+          </h1>
+          <div className="w-10" /> {/* Spacer */}
+        </div>
 
-        <Sidebar
-          activePage={page}
-          setPage={setPage}
-          chats={chats}
-          sortedChats={sortedChats}
-          currentChatId={currentChatId}
-          onNewChat={handleNewChat}
-          onSwitchChat={handleSwitchChat}
-          onDeleteChat={handleDeleteChat}
-          onRenameChat={renameChat}
-          onTogglePin={togglePin}
-          search={search}
-          onSearchChange={setSearch}
-        />
-
-        <div className="relative flex min-h-0 flex-1 flex-col">
-          {/* Global Floating Theme Toggle */}
-          <div className="fixed bottom-8 right-8 z-[9999]">
-            <button
-                type="button"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="flex h-14 w-14 items-center justify-center rounded-full bg-white/80 shadow-2xl backdrop-blur-xl transition-all hover:scale-110 active:scale-95 dark:bg-[#111827]/80 dark:border dark:border-white/10"
-                title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            >
-                <span className="text-2xl">{theme === "dark" ? "☀️" : "🌙"}</span>
-            </button>
-          </div>
-
-          {page === "chat" && (
-            <Chat
-              messages={currentMessages}
-              updateMessages={updateCurrentMessages}
-              chatConfig={currentChatConfig}
-              updateChatConfig={updateCurrentChatMeta}
-              currentChatTitle={chats[currentChatId]?.title || "New Chat"}
-              currentChatId={currentChatId}
-              renameChat={renameChat}
+        <div className="flex min-h-0 flex-1 bg-gray-50 dark:bg-black">
+          {/* Mobile Overlay */}
+          {isSidebarOpen && (
+            <div 
+              className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm md:hidden"
+              onClick={() => setIsSidebarOpen(false)}
             />
           )}
-          {page === "current" && <CurrentAffairs theme={theme} setTheme={setTheme} />}
-          {page === "quiz" && <Quiz theme={theme} setTheme={setTheme} />}
-        </div>
-      </div>
 
-      <footer className="border-t border-gray-200 dark:border-white/5 py-6">
-        <div className="flex justify-center px-6">
-          <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-gray-400 opacity-60 transition-opacity hover:opacity-100 dark:text-neutral-500">
-            Crafted by <span className="font-bold text-gray-600 dark:text-white/80">Mohammad Sameer</span>
-          </p>
+          <Sidebar
+            activePage={page}
+            setPage={(p) => {
+              setPage(p);
+              setIsSidebarOpen(false);
+            }}
+            chats={chats}
+            sortedChats={sortedChats}
+            currentChatId={currentChatId}
+            onNewChat={() => {
+              handleNewChat();
+              setIsSidebarOpen(false);
+            }}
+            onSwitchChat={(id) => {
+              handleSwitchChat(id);
+              setIsSidebarOpen(false);
+            }}
+            onDeleteChat={handleDeleteChat}
+            onRenameChat={renameChat}
+            onTogglePin={togglePin}
+            search={search}
+            onSearchChange={setSearch}
+            isOpen={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
+          />
+
+          <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
+            {/* Global Floating Theme Toggle */}
+            <div className="fixed bottom-24 right-6 z-[9999] md:bottom-8 md:right-8">
+              <button
+                type="button"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-2xl backdrop-blur-xl transition-all hover:scale-110 active:scale-95 md:h-14 md:w-14 dark:bg-[#111827]/80 dark:border dark:border-white/10"
+                title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              >
+                <span className="text-xl md:text-2xl">{theme === "dark" ? "☀️" : "🌙"}</span>
+              </button>
+            </div>
+
+            {page === "chat" && (
+              <Chat
+                messages={currentMessages}
+                updateMessages={updateCurrentMessages}
+                chatConfig={currentChatConfig}
+                updateChatConfig={updateCurrentChatMeta}
+                currentChatTitle={chats[currentChatId]?.title || "New Chat"}
+                currentChatId={currentChatId}
+                renameChat={renameChat}
+              />
+            )}
+            {page === "current" && <CurrentAffairs theme={theme} setTheme={setTheme} />}
+            {page === "quiz" && <Quiz theme={theme} setTheme={setTheme} />}
+          </div>
         </div>
-      </footer>
+
+        <footer className="hidden border-t border-gray-200 py-6 md:block dark:border-white/5">
+          <div className="flex justify-center px-6">
+            <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-gray-400 opacity-60 transition-opacity hover:opacity-100 dark:text-neutral-500">
+              Crafted by <span className="font-bold text-gray-600 dark:text-white/80">Mohammad Sameer</span>
+            </p>
+          </div>
+        </footer>
       </div>
     </div>
   );
