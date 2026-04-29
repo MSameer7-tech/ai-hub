@@ -183,7 +183,7 @@ function Sidebar({
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden h-full w-72 shrink-0 border-r border-gray-200 bg-gray-100 transition-colors duration-300 md:block dark:border-white/10 dark:bg-[#0a0f1c] dark:backdrop-blur-xl">
+      <aside className="sticky top-0 hidden h-screen w-72 shrink-0 border-r border-gray-200 bg-gray-100 transition-colors duration-300 md:block dark:border-white/10 dark:bg-[#0a0f1c] dark:backdrop-blur-xl">
         {sidebarContent}
       </aside>
 
