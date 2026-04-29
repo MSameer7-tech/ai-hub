@@ -110,7 +110,7 @@ function Quiz({ theme, setTheme }) {
   }, [timerActive, timeLeft]);
 
   return (
-    <div className="relative flex-1 overflow-y-auto p-6 text-gray-800 dark:text-white">
+    <div className="relative flex-1 overflow-y-auto px-6 pt-24 pb-12 text-gray-800 dark:text-white">
       {/* Background Decorative Glow */}
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500/5 blur-[120px] dark:bg-blue-500/10" />
 
