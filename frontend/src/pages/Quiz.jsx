@@ -152,21 +152,23 @@ function Quiz({ theme, setTheme }) {
         </div>
 
         {!questions.length && !isStarting && !quizFinished && (
-          <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 items-end gap-5">
-                <div className="flex flex-col gap-2.5">
-                    <label className="ml-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Quantity</label>
+          <div className="space-y-10">
+            <div className="flex flex-col md:flex-row md:items-end gap-6">
+                <div className="flex-1 flex flex-col gap-3">
+                    <label className="ml-1 text-[11px] font-black uppercase tracking-[0.25em] text-gray-400 dark:text-neutral-500">
+                        Quantity
+                    </label>
                     <div className="relative">
                         <select
                         value={totalQuestions}
                         onChange={(e) => setTotalQuestions(Number(e.target.value))}
-                        className="w-full appearance-none rounded-2xl border border-gray-200 bg-white px-6 py-4.5 font-bold text-gray-800 outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-white/10 dark:bg-white/5 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10"
+                        className="h-[68px] w-full appearance-none rounded-2xl border border-gray-200 bg-white px-7 font-bold text-gray-900 outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-white/10 dark:bg-white/5 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10"
                         >
                             <option value={5}>5 Questions</option>
                             <option value={10}>10 Questions</option>
                             <option value={15}>15 Questions</option>
                         </select>
-                        <div className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 text-gray-400">
+                        <div className="pointer-events-none absolute right-6 top-1/2 -translate-y-1/2 text-gray-400">
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
                             </svg>
@@ -174,19 +176,21 @@ function Quiz({ theme, setTheme }) {
                     </div>
                 </div>
                 
-                <div className="flex flex-col gap-2.5">
-                    <label className="ml-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Difficulty</label>
+                <div className="flex-1 flex flex-col gap-3">
+                    <label className="ml-1 text-[11px] font-black uppercase tracking-[0.25em] text-gray-400 dark:text-neutral-500">
+                        Difficulty
+                    </label>
                     <div className="relative">
                         <select
                         value={difficulty}
                         onChange={(e) => setDifficulty(e.target.value)}
-                        className="w-full appearance-none rounded-2xl border border-gray-200 bg-white px-6 py-4.5 font-bold text-gray-800 outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-white/10 dark:bg-white/5 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10"
+                        className="h-[68px] w-full appearance-none rounded-2xl border border-gray-200 bg-white px-7 font-bold text-gray-900 outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-white/10 dark:bg-white/5 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10"
                         >
                             <option value="easy">Easy Level</option>
                             <option value="medium">Standard Level</option>
                             <option value="hard">Advanced Level</option>
                         </select>
-                        <div className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 text-gray-400">
+                        <div className="pointer-events-none absolute right-6 top-1/2 -translate-y-1/2 text-gray-400">
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
                             </svg>
@@ -196,14 +200,14 @@ function Quiz({ theme, setTheme }) {
 
                 <button
                 onClick={handleStart}
-                className="group relative h-[62px] w-full overflow-hidden rounded-2xl bg-blue-600 px-8 font-black uppercase tracking-widest text-white transition-all hover:scale-[1.03] hover:bg-blue-700 hover:shadow-2xl hover:shadow-blue-600/30 active:scale-95"
+                className="group relative h-[68px] flex-1 overflow-hidden rounded-2xl bg-blue-600 px-8 font-black uppercase tracking-[0.2em] text-white transition-all hover:scale-[1.02] hover:bg-blue-700 hover:shadow-2xl hover:shadow-blue-600/30 active:scale-95"
                 >
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                    Initialize Quiz
-                    <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                </span>
+                    <span className="relative z-10 flex items-center justify-center gap-3">
+                        Initialize
+                        <svg className="w-6 h-6 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                    </span>
                 </button>
             </div>
 
