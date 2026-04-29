@@ -3,10 +3,10 @@ import os
 import re
 import threading
 import time
+
 import requests
 from dotenv import load_dotenv
 from groq import Groq
-from google import genai
 
 load_dotenv(override=True)
 
@@ -23,10 +23,24 @@ OPENROUTER_API_KEY = sanitize_env_key(os.getenv("OPENROUTER_API_KEY"))
 TOGETHER_API_KEY = sanitize_env_key(os.getenv("TOGETHER_API_KEY"))
 MISTRAL_API_KEY = sanitize_env_key(os.getenv("MISTRAL_API_KEY"))
 
-client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
-gemini_client = genai.Client(api_key=GEMINI_API_KEY) if GEMINI_API_KEY else None
+
+def get_groq_client():
+    api_key = sanitize_env_key(os.getenv("GROQ_API_KEY"))
+    if not api_key:
+        return None
+    return Groq(api_key=api_key)
+
+
+def get_gemini_client():
+    api_key = sanitize_env_key(os.getenv("GEMINI_API_KEY"))
+    if not api_key:
+        return None
+    from google import genai
+
+    return genai.Client(api_key=api_key)
 
 def call_groq(messages, max_tokens, timeout):
+    client = get_groq_client()
     if not client: raise ValueError("Groq key missing")
     
     result_holder = []
@@ -60,6 +74,7 @@ def call_groq(messages, max_tokens, timeout):
     return res.strip()
 
 def call_gemini(messages, max_tokens, timeout):
+    gemini_client = get_gemini_client()
     if not gemini_client:
         raise Exception("Missing Gemini API Key")
     contents = [m.get("content", "") for m in messages]

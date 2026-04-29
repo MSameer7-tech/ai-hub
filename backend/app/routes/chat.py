@@ -5,6 +5,8 @@ from app.models.schemas import ChatRequest
 from app.services.chat_service import get_chat_response
 from app.services.llm_service import generate_chat_title
 
+print("CHAT ROUTE LOADED")
+
 router = APIRouter()
 
 
@@ -14,7 +16,14 @@ class ChatTitleRequest(BaseModel):
 
 @router.post("/chat")
 def chat(request: ChatRequest) -> dict[str, str | bool | None]:
-    return get_chat_response(request)
+    try:
+        return get_chat_response(request)
+    except Exception as exc:
+        print(f"Chat route error: {exc}")
+        return {
+            "response": "API rate limits exhausted. You can still use Current Affairs and Quiz sections.",
+            "mode": "chat",
+        }
 
 
 @router.post("/chat/title")

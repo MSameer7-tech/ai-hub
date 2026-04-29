@@ -5,7 +5,6 @@ import threading
 import time
 
 import requests
-from newspaper import Article
 from dotenv import load_dotenv
 
 from app.services.llm_service import generate_response
@@ -481,6 +480,8 @@ def fetch_full_article(url: str):
     No LLM used.
     """
     try:
+        from newspaper import Article
+
         article = Article(url)
         article.download()
         article.parse()
@@ -527,5 +528,4 @@ def structure_article(text: str) -> dict:
         "key_points": key_points,
         "why_it_matters": build_why_it_matters(sentences)
     }
-
 
