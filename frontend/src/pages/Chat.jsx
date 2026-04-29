@@ -262,30 +262,34 @@ function Chat({
           </div>
 
           <div className="flex h-full min-h-0 flex-1 flex-col">
-            <div className="flex-1 overflow-y-auto px-6 py-4 min-h-0">
-              <div className="flex flex-col space-y-4">
+            <div className="flex-1 overflow-y-auto px-6 py-8 min-h-0">
+              <div className="mx-auto flex w-full max-w-3xl flex-col gap-3">
                 {messages.map((msg, i) => (
                   <motion.div
                     key={i}
-                    initial={{ opacity: 0, y: 15 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.25, ease: "easeOut" }}
-                    className={`flex ${
+                    transition={{ duration: 0.3 }}
+                    className={`flex w-full ${
                       msg.role === "user" ? "justify-end" : "justify-start"
-                    } mb-6 transition-all duration-200 ease-in-out`}
+                    }`}
                   >
                     <div
-                      className={`max-w-[75%] px-6 py-4 rounded-[28px] shadow-sm transition-all duration-300 ease-in-out ${
+                      className={`relative max-w-[75%] px-5 py-3 shadow-sm transition-all duration-300 ${
                         msg.role === "user"
-                          ? "bg-blue-600 text-white self-end shadow-blue-500/20 dark:bg-gradient-to-br dark:from-blue-500 dark:to-blue-700"
-                          : "bg-white border border-gray-200 text-gray-800 self-start dark:bg-[#111827]/80 dark:backdrop-blur-lg dark:border-white/5 dark:text-white/90"
+                          ? "rounded-[24px] rounded-br-lg bg-blue-600 text-white dark:bg-gradient-to-br dark:from-blue-500 dark:to-blue-700 shadow-blue-500/20"
+                          : "rounded-[24px] rounded-bl-lg bg-gray-100 text-gray-800 dark:bg-white/[0.05] dark:backdrop-blur-xl dark:border dark:border-white/5 dark:text-gray-100"
                       }`}
-                      style={{ lineHeight: 1.7, whiteSpace: "pre-wrap" }}
+                      style={{ lineHeight: 1.6, whiteSpace: "pre-wrap" }}
                     >
                       {msg.isThinking ? (
-                        <span className="animate-pulse text-white/40">Thinking...</span>
+                        <div className="flex items-center gap-2 py-1">
+                            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-blue-400" />
+                            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-blue-400 [animation-delay:0.2s]" />
+                            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-blue-400 [animation-delay:0.4s]" />
+                        </div>
                       ) : (
-                        msg.text
+                        <span className="text-[15px]">{msg.text}</span>
                       )}
                     </div>
                   </motion.div>
