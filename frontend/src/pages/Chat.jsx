@@ -35,22 +35,25 @@ function Chat({
     textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 180)}px`;
   }, [input]);
 
-  const handleSend = async () => {
-    if (!input.trim() || loading) {
+  const handleSend = async (forcedInput = null) => {
+    const textToSend = typeof forcedInput === "string" ? forcedInput : input;
+
+    if (!textToSend.trim() || loading) {
       return;
     }
 
     setLoading(true);
 
-    const userMsg = { role: "user", text: input };
+    const userMsg = { role: "user", text: textToSend };
     const isFirstMessage = messages.length === 0;
     const thinkingMsg = { role: "assistant", text: "Thinking...", isThinking: true };
     updateMessages((prev) => [...prev, userMsg, thinkingMsg]);
-    const currentInput = input;
+    
+    // Clear input regardless
     setInput("");
 
     if (isFirstMessage && currentChatId) {
-      generateChatTitle(currentInput)
+      generateChatTitle(textToSend)
         .then((data) => {
           const title = data?.title?.trim();
           if (title) {
@@ -59,17 +62,18 @@ function Chat({
         })
         .catch(() => {
           const fallbackTitle =
-            currentInput.slice(0, 30) + (currentInput.length > 30 ? "..." : "");
+            textToSend.slice(0, 30) + (textToSend.length > 30 ? "..." : "");
           renameChat?.(currentChatId, fallbackTitle || "New Chat");
         });
     }
 
     try {
-      const data = await sendChatMessage(currentInput, {
+      const data = await sendChatMessage(textToSend, {
         mode: chatMode,
         quiz_question: quizQuestion || undefined,
         correct_answer: quizAnswer || undefined,
       });
+
 
       if (data.error === "quota_exceeded") {
         setQuotaExceeded(true);
@@ -218,19 +222,24 @@ function Chat({
           </motion.div>
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            {(chatMode === "upsc" 
-                ? ["UPSC-style analysis", "Prelims facts", "Mains perspective", "Key points for exams"] 
-                : ["Summarize latest news", "Top 5 news today", "Explain in simple terms", "Why is this important?"]
+            {(messages.length > 0 
+                ? ["Explain this news", "Why is this important?", "UPSC analysis", "Key points from this"]
+                : chatMode === "upsc" 
+                    ? ["Current affairs for UPSC today", "Important topics for UPSC prep", "Daily current affairs notes", "Prelims-focused current affairs"] 
+                    : ["Summarize latest current affairs", "Top 5 news today", "Major global events today", "Latest tech and economy updates"]
             ).map((suggestion) => (
-              <button
+              <motion.button
                 key={suggestion}
-                onClick={() => setInput(suggestion)}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                onClick={() => handleSend(suggestion)}
                 className="rounded-full border border-white/5 bg-white/5 px-4 py-2 text-xs font-medium text-white/50 transition-all hover:scale-105 hover:border-white/10 hover:bg-white/10 hover:text-white active:scale-95"
               >
                 {suggestion}
-              </button>
+              </motion.button>
             ))}
           </div>
+
 
           {loading && (
             <div className="mt-8 flex items-center gap-3 text-sm font-bold uppercase tracking-widest text-blue-500/50">
@@ -238,6 +247,7 @@ function Chat({
               Thinking...
             </div>
           )}
+
         </div>
       ) : (
         <>
