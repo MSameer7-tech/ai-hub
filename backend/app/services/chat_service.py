@@ -101,7 +101,7 @@ def get_chat_response(request: ChatRequest) -> dict[str, str | bool | None]:
         use_cache=is_news_query,
     )
 
-    if isinstance(response, dict) and response.get("error") == "quota_exceeded":
+    if isinstance(response, dict) and response.get("status") == "limit_exhausted":
         return response
 
     if request.mode == "upsc":
@@ -110,9 +110,9 @@ def get_chat_response(request: ChatRequest) -> dict[str, str | bool | None]:
         mode = "current_affairs" if is_news_query else "chat"
 
     chat_sessions[session_id].append({"role": "user", "content": message})
-    chat_sessions[session_id].append({"role": "assistant", "content": response.strip()})
+    chat_sessions[session_id].append({"role": "assistant", "content": str(response).strip()})
 
     return {
-        "response": response.strip(),
+        "response": str(response).strip(),
         "mode": mode,
     }

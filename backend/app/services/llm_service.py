@@ -186,7 +186,10 @@ def call_llm_with_fallbacks(messages: list[dict], max_tokens: int, timeout: int)
                 time.sleep(0.5)
 
     print("🔥 ALL PROVIDERS FAILED")
-    return f"Got it! I'm here. Ask me anything about '{last_message[:30]}' or any other topic 👍"
+    return {
+        "status": "limit_exhausted",
+        "message": "API rate limits are currently exhausted. You can still explore the Current Affairs and Quiz sections while things reset."
+    }
 
 def generate_response(
     system_prompt: str,

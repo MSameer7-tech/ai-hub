@@ -12,10 +12,11 @@ function Chat({
   currentChatTitle,
   currentChatId,
   renameChat,
+  setPage,
 }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [quotaExceeded, setQuotaExceeded] = useState(false);
+  const [apiExhausted, setApiExhausted] = useState(false);
   const bottomRef = useRef(null);
   const textareaRef = useRef(null);
   const chatMode = chatConfig?.chatMode ?? "chat";
@@ -38,7 +39,7 @@ function Chat({
   const handleSend = async (forcedInput = null) => {
     const textToSend = typeof forcedInput === "string" ? forcedInput : input;
 
-    if (!textToSend.trim() || loading) {
+    if (!textToSend.trim() || loading || apiExhausted) {
       return;
     }
 
@@ -75,15 +76,19 @@ function Chat({
       });
 
 
-      if (data.error === "quota_exceeded") {
-        setQuotaExceeded(true);
-        updateMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            text: data.message || "⚠️ Daily API limit reached. Try again later.",
-          },
-        ]);
+      if (data.status === "limit_exhausted") {
+        setApiExhausted(true);
+        updateMessages((prev) => {
+          const withoutThinking = prev.filter((m) => !m.isThinking);
+          return [
+            ...withoutThinking,
+            {
+              role: "assistant",
+              text: data.message || "API rate limits are currently exhausted. You can still explore the Current Affairs and Quiz sections while things reset.",
+              isExhausted: true
+            },
+          ];
+        });
         setLoading(false);
         return;
       }
@@ -290,7 +295,25 @@ function Chat({
                             <span className="h-1 w-1 md:h-1.5 md:w-1.5 animate-bounce rounded-full bg-blue-400 [animation-delay:0.4s]" />
                         </div>
                       ) : (
-                        <span className="text-sm md:text-[15px]">{msg.text}</span>
+                        <div className="flex flex-col gap-3">
+                          <span className="text-sm md:text-[15px]">{msg.text}</span>
+                          {msg.isExhausted && (
+                            <div className="flex flex-wrap gap-2 pt-2">
+                              <button
+                                onClick={() => setPage("quiz")}
+                                className="rounded-full bg-blue-500/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-blue-400 hover:bg-blue-500/30 transition-all border border-blue-500/30"
+                              >
+                                Try Quiz 🏆
+                              </button>
+                              <button
+                                onClick={() => setPage("current")}
+                                className="rounded-full bg-purple-500/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-purple-400 hover:bg-purple-500/30 transition-all border border-purple-500/30"
+                              >
+                                Read News 🗞️
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
                   </motion.div>
@@ -333,17 +356,17 @@ function Chat({
                     <textarea
                     ref={textareaRef}
                     value={input}
-                    disabled={loading || quotaExceeded}
+                    disabled={loading || apiExhausted}
                     onChange={(event) => setInput(event.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder={quotaExceeded ? "Daily limit reached" : loading ? "Wait..." : chatMode === "upsc" ? "Ask UPSC..." : "Ask..."}
+                    placeholder={apiExhausted ? "API limit reached. Try again later or explore other sections." : loading ? "Wait..." : chatMode === "upsc" ? "Ask UPSC..." : "Ask..."}
                     rows={1}
-                    className="max-h-[120px] md:max-h-[180px] min-h-[40px] md:min-h-[44px] flex-1 resize-none bg-transparent px-1 md:px-2 py-2 text-sm md:text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-white/20 disabled:opacity-50"
+                    className="max-h-[120px] md:max-h-[180px] min-h-[40px] md:min-h-[44px] flex-1 resize-none bg-transparent px-1 md:px-2 py-2 text-sm md:text-base text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-white/20 disabled:opacity-50"
                     />
                     <motion.button
                     type="button"
                     onClick={handleSend}
-                    disabled={loading || quotaExceeded}
+                    disabled={loading || apiExhausted}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className="flex h-10 w-10 md:h-11 md:w-11 items-center justify-center rounded-lg md:rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700 disabled:opacity-50"

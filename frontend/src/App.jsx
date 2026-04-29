@@ -328,6 +328,7 @@ export default function App() {
                 currentChatTitle={chats[currentChatId]?.title || "New Chat"}
                 currentChatId={currentChatId}
                 renameChat={renameChat}
+                setPage={setPage}
               />
             )}
             {page === "current" && <CurrentAffairs theme={theme} setTheme={setTheme} />}
