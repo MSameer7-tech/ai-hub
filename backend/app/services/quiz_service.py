@@ -1,5 +1,4 @@
 import json
-import os
 import random
 import re
 from functools import lru_cache
@@ -8,11 +7,10 @@ from html import unescape
 import requests
 from dotenv import load_dotenv
 
+from app.services.llm_service import generate_response
 from app.services.news_service import fetch_all_news, normalize_article
 
 load_dotenv()
-
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
 
 def fetch_trivia() -> list[dict]:
@@ -120,28 +118,20 @@ def generate_quiz() -> list[dict[str, str | list[str]]]:
     selected_sources = random.sample(source_pool, sample_size)
     compact_sources = [compact_source_item(source) for source in selected_sources]
 
-    prompt = f"""
-You are an exam question generator.
-
-Generate 5 multiple choice questions for UPSC/SSC-style practice from the source items below.
-
-STRICT RULES:
-- Return ONLY valid JSON
-- No explanation
-- No extra text
-- No markdown
-- No code fences
-- Make each question factual and exam-oriented
-- Include 4 options
-- Only 1 correct answer
-- Include a short explanation inside JSON
-
-Format EXACTLY:
+    user_prompt = f"""
+Create 5 factual UPSC/SSC-style MCQs from these source items.
+Return ONLY valid JSON. No markdown or extra text.
+Each item must have 4 options, one answer, and a short explanation.
 
 [
   {{
     "question": "string",
-    "options": ["A", "B", "C", "D"],
+    "options": {{
+      "A": "string",
+      "B": "string",
+      "C": "string",
+      "D": "string"
+    }},
     "answer": "A",
     "explanation": "string"
   }}
@@ -152,17 +142,17 @@ SOURCE_ITEMS:
 """
 
     try:
-        response = requests.post(
-            f"{OLLAMA_BASE_URL}/api/generate",
-            json={
-                "model": "llama3",
-                "prompt": prompt,
-                "stream": False,
-            },
-            timeout=120,
+        raw = generate_response(
+            system_prompt=(
+                "You generate exam practice questions. Return only strict JSON. "
+                "Do not include markdown, comments, or extra prose."
+            ),
+            user_prompt=user_prompt,
+            fallback="[]",
+            timeout=40,
+            max_tokens=700,
+            use_cache=True,
         )
-        response.raise_for_status()
-        raw = response.json().get("response", "[]")
         print("RAW QUIZ:", raw)
         print("RAW LLM RESPONSE:\n", raw)
 
@@ -202,22 +192,32 @@ SOURCE_ITEMS:
         if not isinstance(item, dict):
             continue
         question = str(item.get("question", "")).strip()
-        options = item.get("options", [])
+        options = item.get("options", {})
         answer = str(item.get("answer", "")).strip().upper()
         explanation = str(item.get("explanation", "")).strip()
 
+        if isinstance(options, dict):
+            normalized_options = [
+                str(options.get(letter) or "").strip()
+                for letter in ["A", "B", "C", "D"]
+            ]
+        elif isinstance(options, list):
+            normalized_options = [str(option).strip() for option in options]
+        else:
+            normalized_options = []
+
         if (
             not question
-            or not isinstance(options, list)
-            or len(options) != 4
+            or len(normalized_options) != 4
             or answer not in {"A", "B", "C", "D"}
+            or any(not option for option in normalized_options)
         ):
             continue
 
         normalized_quiz.append(
             {
                 "question": question,
-                "options": [str(option) for option in options],
+                "options": normalized_options,
                 "answer": answer,
                 "explanation": explanation or "Review the question and the source material, then try again.",
             }
@@ -275,45 +275,28 @@ def generate_quiz_question(
     source = random.choice(source_pool)
     context = compact_source_item(source).get("content", "")
 
-    prompt = f"""
-Generate ONE UPSC-style multiple choice question.
+    user_prompt = f"""
+Create ONE short MCQ from this text:
+{context[:200]}
 
-Context:
-{context}
-
-Rules:
-- Question must be clear and factual
-- 4 options (A, B, C, D)
-- Only ONE correct answer
-- Include explanation
-
-Respond ONLY in JSON format:
-
+Return ONLY valid JSON:
 {{
   "question": "...",
-  "options": {{
-    "A": "...",
-    "B": "...",
-    "C": "...",
-    "D": "..."
-  }},
+  "options": {{"A":"...","B":"...","C":"...","D":"..."}},
   "correct": "A",
   "explanation": "..."
 }}
 """
 
     try:
-        response = requests.post(
-            f"{OLLAMA_BASE_URL}/api/generate",
-            json={
-                "model": "llama3",
-                "prompt": prompt,
-                "stream": False,
-            },
-            timeout=30,
+        raw = generate_response(
+            system_prompt="Return ONLY valid JSON.",
+            user_prompt=user_prompt,
+            fallback="{}",
+            timeout=15,
+            max_tokens=120,
+            use_cache=False,
         )
-        response.raise_for_status()
-        raw = response.json().get("response", "")
         print("RAW QUIZ QUESTION:\n", raw)
 
         start = raw.find("{")

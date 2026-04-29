@@ -7,12 +7,13 @@ import time
 import requests
 from dotenv import load_dotenv
 
+from app.services.llm_service import generate_response
+
 load_dotenv()
 
 API_KEY = os.getenv("NEWS_API_KEY", "YOUR_API_KEY")
 GNEWS_API_KEY = os.getenv("GNEWS_API_KEY")
 NEWSDATA_API_KEY = os.getenv("NEWSDATA_API_KEY")
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 NEWS_API_URL = "https://newsapi.org/v2/everything"
 CATEGORY_MAP = {
     "general": "india government OR economy OR geopolitics",
@@ -20,7 +21,7 @@ CATEGORY_MAP = {
     "economy": "inflation OR GDP OR economy OR markets",
     "tech": "AI OR startups OR innovation OR technology",
 }
-CACHE_TTL = 60
+CACHE_TTL = 120
 NEWS_CACHE = {
     "data": {},
     "last_updated": {},
@@ -41,26 +42,47 @@ def summarize_with_llm(text: str) -> str:
     if not text:
         return "No summary available."
 
-    try:
-        response = requests.post(
-            f"{OLLAMA_BASE_URL}/api/generate",
-            json={
-                "model": "llama3",
-                "prompt": f"Summarize in 2 lines:\n{text}",
-                "stream": False,
-            },
-            timeout=10,
-        )
-        response.raise_for_status()
-        summary = response.json().get("response", "").strip()
-        summary = summary.removeprefix("Here is a 2-line summary:").strip()
-        summary = summary.removeprefix("2-line summary:").strip()
-        summary = summary.removeprefix("Summary:").strip()
-        return summary
-    except Exception as exc:
-        print("LLM ERROR:", exc)
-        snippet = text[:120].strip()
-        return f"{snippet}..." if len(text) > 120 else snippet
+    snippet = text[:120].strip()
+    fallback = f"{snippet}..." if len(text) > 120 else snippet
+    summary = generate_response(
+        system_prompt=(
+            "Summarize news professionally in 2-3 concise lines. "
+            "Do not use phrases like 'Here is a summary' or mention instructions."
+        ),
+        user_prompt=f"News text:\n{text[:900]}",
+        fallback=fallback,
+        timeout=10,
+        max_tokens=90,
+        use_cache=True,
+    )
+    summary = summary.removeprefix("Here is a 2-line summary:").strip()
+    summary = summary.removeprefix("Here is a summary:").strip()
+    summary = summary.removeprefix("2-line summary:").strip()
+    summary = summary.removeprefix("Summary:").strip()
+    return summary or fallback
+
+
+VALID_TAGS = ["Politics", "Economy", "Technology", "International", "Defense", "Environment", "Science", "Sports", "Business"]
+
+def classify_tag(title: str, description: str) -> str:
+    text = f"{title} {description}".lower()
+    if "election" in text or "government" in text or "minister" in text or "parliament" in text:
+        return "Politics"
+    if " ai " in f" {text} " or "tech" in text or "startup" in text or "software" in text:
+        return "Technology"
+    if "war" in text or "military" in text or "army" in text or "defence" in text or "defense" in text:
+        return "Defense"
+    if "market" in text or "rbi" in text or "gdp" in text or "inflation" in text or "economy" in text:
+        return "Economy"
+    if "environment" in text or "climate" in text or "pollution" in text:
+        return "Environment"
+    if "science" in text or "research" in text or "space" in text:
+        return "Science"
+    if "sport" in text or "cricket" in text or "football" in text:
+        return "Sports"
+    if "business" in text or "company" in text or "trade" in text:
+        return "Business"
+    return "International"
 
 
 def fetch_newsapi(category: str = "general") -> list[dict]:
@@ -157,18 +179,24 @@ def normalize_article(article: dict) -> dict[str, str]:
     elif source:
         source_name = str(source)
 
+    title = clean_content(str(article.get("title") or "").strip())
+    description = clean_content(str(
+        article.get("description") or article.get("content") or ""
+    ).strip())
+    content = clean_content(str(
+        article.get("content")
+        or article.get("description")
+        or article.get("full_content")
+        or ""
+    ).strip())
+
     return {
-        "title": clean_content(str(article.get("title") or "").strip()),
-        "description": clean_content(str(
-            article.get("description") or article.get("content") or ""
-        ).strip()),
-        "content": clean_content(str(
-            article.get("content")
-            or article.get("description")
-            or article.get("full_content")
-            or ""
-        ).strip()),
+        "title": title,
+        "description": description,
+        "content": content,
         "source": source_name,
+        "tag": classify_tag(title, description),
+        "url": str(article.get("url") or article.get("link") or ""),
     }
 
 
@@ -226,17 +254,14 @@ def fetch_current_affairs(category: str = "general") -> list[dict[str, str]]:
     final_articles = []
 
     for article in clean_articles[:5]:
-        try:
-            summary = summarize_with_llm(article["description"])
-        except Exception:
-            summary = article["description"][:150]
-
+        summary = article["description"] or article["content"][:150] if article["content"] else ""
         final_articles.append(
             {
                 "title": article["title"],
-                "summary": summary,
+                "description": summary,
                 "content": article["content"] or article["description"],
-                "category": category,
+                "tag": article.get("tag", category),
+                "url": article.get("url", ""),
             }
         )
 
@@ -317,8 +342,16 @@ def get_news_context(category: str = "general") -> str:
     context = "Here are the latest current affairs:\n\n"
 
     for index, item in enumerate(news, 1):
-        context += f"{index}. {item['title']}\n"
-        context += f"   Summary: {item['summary']}\n\n"
+        title = item.get("title", "Untitled")
+        summary = (
+            item.get("summary")          # legacy key (fallback articles)
+            or item.get("description")   # primary key from fetch_current_affairs
+            or item.get("content", "")[:200]
+        ).strip()
+        context += f"{index}. {title}\n"
+        if summary:
+            context += f"   {summary}\n"
+        context += "\n"
 
     return context
 

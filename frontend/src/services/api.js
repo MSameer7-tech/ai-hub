@@ -85,3 +85,6 @@ export const startQuiz = (total = 5) =>
 
 export const submitAnswer = (data) =>
   API.post("/quiz/answer", data);
+
+export const askArticle = (question, article) =>
+  API.post("/ask-article", { question, article });

@@ -15,6 +15,7 @@ function Chat({
 }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [quotaExceeded, setQuotaExceeded] = useState(false);
   const bottomRef = useRef(null);
   const textareaRef = useRef(null);
   const chatMode = chatConfig?.chatMode ?? "chat";
@@ -43,7 +44,8 @@ function Chat({
 
     const userMsg = { role: "user", text: input };
     const isFirstMessage = messages.length === 0;
-    updateMessages((prev) => [...prev, userMsg]);
+    const thinkingMsg = { role: "assistant", text: "Thinking...", isThinking: true };
+    updateMessages((prev) => [...prev, userMsg, thinkingMsg]);
     const currentInput = input;
     setInput("");
 
@@ -63,30 +65,31 @@ function Chat({
     }
 
     try {
-      let data;
+      const data = await sendChatMessage(currentInput, {
+        mode: chatMode,
+        quiz_question: quizQuestion || undefined,
+        correct_answer: quizAnswer || undefined,
+      });
 
-      for (let i = 0; i < 3; i += 1) {
-        try {
-          data = await sendChatMessage(currentInput, {
-            mode: chatMode,
-            quiz_question: quizQuestion || undefined,
-            correct_answer: quizAnswer || undefined,
-          });
-          break;
-        } catch (err) {
-          if (i === 2) {
-            throw err;
-          }
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-        }
+      if (data.error === "quota_exceeded") {
+        setQuotaExceeded(true);
+        updateMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            text: data.message || "⚠️ Daily API limit reached. Try again later.",
+          },
+        ]);
+        setLoading(false);
+        return;
       }
 
       const responseMode = data?.mode ?? "chat";
 
       updateMessages((prev) => {
-        const updated = [...prev];
+        const withoutThinking = prev.filter((m) => !m.isThinking);
         return [
-          ...updated,
+          ...withoutThinking,
           {
             role: "assistant",
             text: data?.response ?? "No response received.",
@@ -100,6 +103,12 @@ function Chat({
           quizQuestion: data.question ?? "",
           quizAnswer: data.correct_answer ?? "",
         });
+      } else if (responseMode === "upsc") {
+        updateChatConfig({
+          chatMode: "upsc",
+          quizQuestion: "",
+          quizAnswer: "",
+        });
       } else {
         updateChatConfig({
           chatMode: "chat",
@@ -110,12 +119,12 @@ function Chat({
     } catch (err) {
       console.error(err);
       updateMessages((prev) => {
-        const updated = [...prev];
+        const withoutThinking = prev.filter((m) => !m.isThinking);
         return [
-          ...updated,
+          ...withoutThinking,
           {
             role: "assistant",
-            text: "⚠️ Server is starting... please wait a moment",
+            text: "⚠️ I'm having trouble responding right now. Please try again.",
           },
         ];
       });
@@ -135,6 +144,18 @@ function Chat({
 
   return (
     <div className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#0A0A0B] text-white">
+      <div className="absolute right-6 top-4 z-10 flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 backdrop-blur-md">
+        <span className={`text-xs font-medium transition-colors ${chatMode !== "upsc" ? "text-white" : "text-gray-500"}`}>Normal</span>
+        <button
+          type="button"
+          onClick={() => updateChatConfig({ ...chatConfig, chatMode: chatMode === "upsc" ? "chat" : "upsc" })}
+          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${chatMode === "upsc" ? "bg-blue-600" : "bg-gray-600"}`}
+        >
+          <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${chatMode === "upsc" ? "translate-x-5" : "translate-x-1"}`} />
+        </button>
+        <span className={`text-xs font-medium transition-colors ${chatMode === "upsc" ? "text-blue-400" : "text-gray-500"}`}>UPSC</span>
+      </div>
+
       <div className="absolute inset-0 -z-10">
         <div className="absolute left-1/3 top-0 h-96 w-96 bg-violet-500/10 blur-[120px]" />
         <div className="absolute bottom-0 right-1/3 h-96 w-96 bg-indigo-500/10 blur-[120px]" />
@@ -225,7 +246,11 @@ function Chat({
                       }`}
                       style={{ lineHeight: 1.5, whiteSpace: "pre-wrap" }}
                     >
-                      {msg.text}
+                      {msg.isThinking ? (
+                        <span className="animate-pulse text-white/40">Thinking...</span>
+                      ) : (
+                        msg.text
+                      )}
                     </div>
                   </motion.div>
                 ))}
@@ -247,17 +272,17 @@ function Chat({
                 <textarea
                   ref={textareaRef}
                   value={input}
-                  disabled={loading}
+                  disabled={loading || quotaExceeded}
                   onChange={(event) => setInput(event.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder={loading ? "Waiting for response..." : "Ask anything..."}
+                  placeholder={quotaExceeded ? "⚠️ Daily limit reached" : loading ? "Waiting for response..." : "Ask anything..."}
                   rows={1}
                   className="max-h-[180px] min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2 text-white outline-none placeholder:text-white/30 disabled:opacity-50"
                 />
                 <motion.button
                   type="button"
                   onClick={handleSend}
-                  disabled={loading}
+                  disabled={loading || quotaExceeded}
                   whileTap={{ scale: 0.95 }}
                   className="rounded-lg bg-white px-4 py-2 text-black transition-all duration-200 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50"
                 >

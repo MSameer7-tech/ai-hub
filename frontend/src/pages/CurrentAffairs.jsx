@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
-import { askCurrentAffairs } from "../services/api";
+import { askCurrentAffairs, askArticle } from "../services/api";
 
 const REFRESH_INTERVAL = 70;
 
@@ -138,8 +138,27 @@ function CurrentAffairs() {
     }
   };
 
-  const handleAskAboutTopic = (topic) => {
-    setQuestion(`Tell me more about ${topic.title}`);
+  const handleAskAboutTopic = async (topic) => {
+    const questionText = `Tell me more about ${topic.title}`;
+    
+    setHistory((prev) => [...prev, { q: questionText, a: "Thinking..." }]);
+    
+    try {
+      const response = await askArticle(questionText, topic);
+      const answer = response.data?.answer || "No answer received.";
+      
+      setHistory((prev) => {
+        const newHistory = [...prev];
+        newHistory[newHistory.length - 1].a = answer;
+        return newHistory;
+      });
+    } catch (err) {
+      setHistory((prev) => {
+        const newHistory = [...prev];
+        newHistory[newHistory.length - 1].a = "Unable to fetch an answer right now.";
+        return newHistory;
+      });
+    }
   };
 
   const handleRefresh = async () => {
@@ -216,13 +235,7 @@ function CurrentAffairs() {
               {articles.map((topic, index) => (
                 <article
                   key={`${topic?.title || "topic"}-${index}`}
-                  onClick={() =>
-                    setSelectedArticle({
-                      title: topic.title,
-                      content: topic.content || topic.description || topic.summary,
-                      category: topic.category || getCategoryTag(topic),
-                    })
-                  }
+                  onClick={() => setSelectedArticle(topic)}
                 >
                   <motion.div
                     whileHover={{ scale: 1.02 }}
@@ -248,7 +261,7 @@ function CurrentAffairs() {
                       marginBottom: "12px",
                     }}
                   >
-                    {getCategoryTag(topic)}
+                    {topic?.tag || getCategoryTag(topic)}
                   </div>
                   <h3 style={{ margin: "0 0 10px", fontSize: "1.1rem" }}>
                     <span
@@ -263,7 +276,7 @@ function CurrentAffairs() {
                     </span>
                   </h3>
                   <p
-                    className="text-gray-600 dark:text-gray-300"
+                    className="text-gray-600 dark:text-gray-300 line-clamp-3"
                     style={{
                       margin: 0,
                       lineHeight: 1.6,
@@ -273,7 +286,7 @@ function CurrentAffairs() {
                       overflow: "hidden",
                     }}
                   >
-                    {topic?.summary || "No summary"}
+                    {topic?.description || "No description"}
                   </p>
                   <button
                     type="button"
@@ -406,34 +419,53 @@ function CurrentAffairs() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+            onClick={() => setSelectedArticle(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4"
           >
             <motion.div
+              onClick={(e) => e.stopPropagation()}
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.25 }}
-              className="max-h-[85vh] w-[700px] overflow-y-auto rounded-2xl border border-white/10 bg-[#111827]/90 p-6 shadow-2xl backdrop-blur-xl"
+              style={{ maxWidth: "700px" }}
+              className="max-h-[85vh] w-full overflow-y-auto rounded-2xl border border-white/10 bg-[#111827]/90 p-8 shadow-2xl backdrop-blur-xl"
             >
-              <div className="mb-4 flex items-start justify-between gap-4">
+              <div className="mb-6 flex items-start justify-between gap-4 border-b border-white/10 pb-4">
                 <div>
-                  <span className="text-xs text-blue-400">
-                    {selectedArticle.category}
+                  <span className="text-xs font-bold uppercase tracking-wider text-blue-400">
+                    {selectedArticle.tag || "News"}
                   </span>
-                  <h2 className="mt-2 text-xl font-semibold text-white">
+                  <h2 className="mt-2 text-2xl font-bold leading-tight text-white">
                     {selectedArticle.title}
                   </h2>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSelectedArticle(null)}
-                  className="rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white transition hover:scale-105 active:scale-95"
+                  className="rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-gray-300 transition hover:bg-gray-700 active:scale-95"
                 >
-                  Close
+                  ✕
                 </button>
               </div>
-              <p className="mt-4 whitespace-pre-line leading-relaxed tracking-wide text-gray-300">
-                {selectedArticle.content}
+              <p 
+                className="mt-4 whitespace-pre-line text-gray-300" 
+                style={{ fontSize: "16px", lineHeight: "1.7" }}
+              >
+                {selectedArticle.content || selectedArticle.description}
               </p>
+              
+              {selectedArticle.url && (
+                <div className="mt-8 pt-4 border-t border-white/10">
+                  <a 
+                    href={selectedArticle.url} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-500 hover:scale-105"
+                  >
+                    Read Full Article →
+                  </a>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}

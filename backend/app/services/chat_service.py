@@ -1,59 +1,71 @@
-import os
-
-import requests
-
 from app.models.schemas import ChatRequest
 from app.services.llm_service import (
     evaluate_quiz_answer,
+    generate_response,
 )
 from app.services.news_service import get_news_context
 from app.services.quiz_service import generate_quiz
 
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 SYSTEM_PROMPT = """
-You are a helpful and intelligent AI assistant.
+You are a helpful AI assistant.
+Answer naturally and briefly.
+Do not mention system rules or internal context.
+"""
+UPSC_SYSTEM_PROMPT = """
+You are a UPSC exam expert.
 
-You are given latest current affairs.
+Answer in this format:
 
-Rules:
-- Use current affairs when relevant.
-- If the user asks about news, answer ONLY from the given context.
-- If not found, say:
-  "I couldn't find that in the latest current affairs."
-- Do NOT hallucinate or invent facts.
-- Do NOT mention context or system rules.
-- If unsure, ask a clarification question.
+1. Introduction
+2. Key Facts (bullet points)
+3. Analysis
+4. Conclusion
 
-For general queries, respond normally and naturally.
+Keep it concise but informative.
+"""
+NEWS_SYSTEM_PROMPT = """
+You are a helpful AI assistant with access to latest current affairs.
+If the user asks about news, answer only from the supplied current-affairs notes.
+If the answer is missing, say: "I couldn't find that in the latest current affairs."
+Do not invent facts or mention the notes.
+Keep answers brief and natural.
 """
 CURRENT_AFFAIRS_KEYWORDS = [
     "news",
-    "current",
-    "today",
-    "latest",
-    "india",
-    "world",
-    "government",
-    "economy",
-    "war",
-    "policy",
-    "election",
+    "current affairs",
+    "today's",
+    "latest news",
+    "breaking news",
+    "economy update",
+    "government policy",
+    "election results",
+    "war update",
+    "today in",
 ]
 GREETINGS = {"hi", "hello", "hey"}
 
 
 def is_current_affairs_query(user_input: str) -> bool:
     normalized_input = user_input.lower()
-    return any(word in normalized_input for word in CURRENT_AFFAIRS_KEYWORDS)
+    # Only route if it looks like a news request
+    return any(word in normalized_input for word in CURRENT_AFFAIRS_KEYWORDS) or \
+           ("india" in normalized_input and "news" in normalized_input) or \
+           ("latest" in normalized_input and "?" not in normalized_input)
 
 
 def is_greeting(text: str) -> bool:
     return text.lower().strip() in GREETINGS
 
 
+chat_sessions: dict[str, list[dict[str, str]]] = {}
+
 def get_chat_response(request: ChatRequest) -> dict[str, str | bool | None]:
     message = request.message.strip()
     normalized_message = message.lower()
+    session_id = getattr(request, "session_id", "default")
+
+    if session_id not in chat_sessions:
+        chat_sessions[session_id] = []
 
     if (
         request.mode == "quiz"
@@ -102,31 +114,43 @@ def get_chat_response(request: ChatRequest) -> dict[str, str | bool | None]:
             "mode": "chat",
         }
 
-    context = get_news_context()
-    prompt = f"""
-{SYSTEM_PROMPT}
-
-Current Affairs:
-{context}
-
-User: {message}
-Assistant:
-"""
-
-    response = requests.post(
-        f"{OLLAMA_BASE_URL}/api/generate",
-        json={
-            "model": "llama3",
-            "prompt": prompt,
-            "stream": False,
-        },
-        timeout=60,
+    is_news_query = is_current_affairs_query(message)
+    context = get_news_context()[:1800] if is_news_query else ""
+    user_prompt = (
+        f"Current affairs notes:\n{context}\n\nUser: {message}"
+        if is_news_query
+        else message
     )
-    response.raise_for_status()
+    
+    history = chat_sessions[session_id][-6:]
 
-    mode = "current_affairs" if is_current_affairs_query(message) else "chat"
+    if request.mode == "upsc":
+        active_system_prompt = UPSC_SYSTEM_PROMPT
+    else:
+        active_system_prompt = NEWS_SYSTEM_PROMPT if is_news_query else SYSTEM_PROMPT
+
+    response = generate_response(
+        system_prompt=active_system_prompt,
+        user_prompt=user_prompt,
+        history=history,
+        fallback="I'm having trouble reaching the AI service right now. Please try again.",
+        timeout=12,
+        max_tokens=200,
+        use_cache=is_news_query,
+    )
+
+    if isinstance(response, dict) and response.get("error") == "quota_exceeded":
+        return response
+
+    if request.mode == "upsc":
+        mode = "upsc"
+    else:
+        mode = "current_affairs" if is_news_query else "chat"
+
+    chat_sessions[session_id].append({"role": "user", "content": message})
+    chat_sessions[session_id].append({"role": "assistant", "content": response.strip()})
 
     return {
-        "response": response.json()["response"].strip(),
+        "response": response.strip(),
         "mode": mode,
     }

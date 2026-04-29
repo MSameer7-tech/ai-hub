@@ -1,8 +1,8 @@
 import requests
 from fastapi import APIRouter, HTTPException
 
-from app.models.schemas import CurrentAffairsQueryRequest
-from app.services.llm_service import get_contextual_response
+from app.models.schemas import CurrentAffairsQueryRequest, AskArticleRequest
+from app.services.llm_service import get_contextual_response, generate_response
 from app.services.news_service import cached_news, get_news_context
 from app.services.quiz_service import generate_quiz_cached
 
@@ -31,3 +31,49 @@ def query_current_affairs(request: CurrentAffairsQueryRequest) -> dict[str, str]
     )
     answer = get_contextual_response(context_with_fallback, request.question)
     return {"response": answer.strip()}
+
+
+@router.post("/ask-article")
+def ask_article(request: AskArticleRequest) -> dict:
+    article = request.article
+    question = request.question
+    
+    prompt = f"""
+You are a current affairs expert helping a student preparing for government exams.
+
+Answer ONLY using the article below.
+
+Also:
+- Add 2-3 bullet points summary
+- Highlight key facts
+
+ARTICLE:
+Title: {article.get('title', 'No Title')}
+Content: {article.get('content') or article.get('description', 'No Content')}
+
+QUESTION:
+{question}
+
+INSTRUCTIONS:
+- Answer clearly
+- Be factual
+- If answer not in article, say "Not mentioned in the article"
+"""
+
+    try:
+        response = generate_response(
+            system_prompt="You are an expert tutor. Follow the user's instructions exactly.",
+            user_prompt=prompt,
+            fallback="Error fetching answer",
+            timeout=15,
+            max_tokens=350,
+            use_cache=False,
+        )
+        if isinstance(response, dict) and response.get("error") == "quota_exceeded":
+            return {"answer": response["message"], "error": "quota_exceeded"}
+        return {"answer": response}
+    except Exception as e:
+        return {
+            "answer": "Error fetching answer",
+            "debug": str(e)
+        }

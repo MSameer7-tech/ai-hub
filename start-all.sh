@@ -1,10 +1,5 @@
 #!/bin/bash
 
-echo "Starting Ollama..."
-ollama serve &
-
-sleep 2
-
 echo "Starting Backend..."
 cd /Users/sameer/Documents/ai-chatbot/backend || exit 1
 source venv/bin/activate
