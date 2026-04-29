@@ -252,7 +252,7 @@ export default function App() {
 
   return (
     <div className={theme === "dark" ? "dark" : ""}>
-      <div className="flex min-h-screen w-screen flex-col bg-white text-gray-900 transition-colors duration-300 dark:bg-black dark:text-white">
+      <div className="flex min-h-screen w-full flex-col overflow-x-hidden bg-white text-gray-900 transition-colors duration-300 dark:bg-black dark:text-white">
         
         {/* Mobile Header */}
         <div className="flex items-center justify-between border-b border-gray-200 bg-white/80 px-4 py-3 backdrop-blur-xl md:hidden dark:border-white/5 dark:bg-black/80">
