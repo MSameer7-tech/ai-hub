@@ -91,16 +91,9 @@ function CurrentAffairs({ theme, setTheme }) {
     setCooldown(120); // Sync cooldown with auto-refresh if desired, or keep as is
   };
 
-  // Auto-Refresh (Every 120 seconds)
+  // Initial Load Only
   useEffect(() => {
-    fetchArticles(); // Initial fetch
-    
-    const interval = setInterval(() => {
-      console.log("[AUTO-REFRESH] Triggering 120s cycle...");
-      fetchArticles(true);
-    }, 120000); 
-
-    return () => clearInterval(interval);
+    fetchArticles();
   }, []);
 
 
