@@ -363,9 +363,60 @@ def clear_news_cache() -> None:
         NEWS_CACHE["last_updated"].clear()
         NEWS_CACHE["refreshing"].clear()
 
+def clean_article_text(text: str) -> str:
+    if not text:
+        return ""
+
+    # Normalize whitespace
+    text = text.replace("\r", "\n")
+    lines = text.split("\n")
+
+    cleaned_lines = []
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+
+        lower = line.lower()
+
+        # ❌ Remove junk / ads / UI text
+        if any(keyword in lower for keyword in [
+            "subscribe",
+            "whatsapp channel",
+            "reliable and trusted",
+            "click here",
+            "sign up",
+            "login",
+            "advertisement",
+            "sponsored",
+            "read more",
+            "terms of use",
+            "privacy policy",
+            "copyright",
+        ]):
+            continue
+
+        # ❌ Remove weird broken repeated lines or very short junk
+        if len(line) < 25:
+            continue
+
+        cleaned_lines.append(line)
+
+    # Remove duplicate lines
+    seen = set()
+    unique_lines = []
+    for line in cleaned_lines:
+        if line not in seen:
+            seen.add(line)
+            unique_lines.append(line)
+
+    # Join into paragraphs
+    cleaned_text = "\n\n".join(unique_lines)
+    return cleaned_text.strip()
+
 def fetch_full_article(url: str):
     """
-    Scrape full article text using newspaper3k.
+    Scrape and clean full article text using newspaper3k.
     No LLM used.
     """
     try:
@@ -373,9 +424,11 @@ def fetch_full_article(url: str):
         article.download()
         article.parse()
 
+        cleaned_text = clean_article_text(article.text)
+
         return {
             "title": article.title,
-            "text": article.text,
+            "text": cleaned_text,
             "authors": article.authors,
             "publish_date": str(article.publish_date) if article.publish_date else None,
         }
@@ -385,4 +438,5 @@ def fetch_full_article(url: str):
             "error": "Unable to fetch full article",
             "details": str(e)
         }
+
 
