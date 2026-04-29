@@ -45,8 +45,10 @@ def get_full_article(url: str):
         "overview": structured["overview"],
         "key_points": structured["key_points"],
         "why_it_matters": structured["why_it_matters"],
+        "text": article_data["text"],
         "url": url
     }
+
 
 
 
@@ -72,27 +74,34 @@ def ask_article(request: AskArticleRequest) -> dict:
     article = request.article
     question = request.question
     
+    # Prioritize full text if available, fallback to overview or description
+    content = article.get("text") or article.get("content") or article.get("description") or "No content available."
+    
+    # Truncate content to prevent token overflow while keeping high context
+    content = content[:4000]
+
     prompt = f"""
-You are a current affairs expert helping a student preparing for government exams.
+You are a highly analytical Current Affairs Assistant specializing in UPSC and government exam preparation.
 
-Answer ONLY using the article below.
+TASK:
+Answer the student's question based ONLY on the provided article content.
+Do NOT use outside knowledge or hallucinate information not present in the text.
 
-Also:
-- Add 2-3 bullet points summary
-- Highlight key facts
+INSTRUCTIONS:
+1. Be direct, factual, and concise.
+2. If the answer is not found in the article, explicitly state: "This information is not mentioned in the article provided."
+3. Structure your response clearly using bullet points for key facts if helpful.
 
-ARTICLE:
+ARTICLE CONTEXT:
 Title: {article.get('title', 'No Title')}
-Content: {article.get('content') or article.get('description', 'No Content')}
+Content: {content}
 
 QUESTION:
 {question}
 
-INSTRUCTIONS:
-- Answer clearly
-- Be factual
-- If answer not in article, say "Not mentioned in the article"
+RESPONSE:
 """
+
 
     try:
         response = generate_response(

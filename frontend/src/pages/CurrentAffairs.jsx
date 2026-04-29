@@ -182,27 +182,37 @@ function CurrentAffairs() {
   };
 
   const handleAskAboutTopic = async (topic) => {
-    const questionText = `Tell me more about ${topic.title}`;
+    // If fullArticle is open and matches the topic, use it for full context
+    const contextTopic = (selectedArticle && fullArticle && !fullArticle.error) ? { ...topic, ...fullArticle } : topic;
+    const questionText = question.trim() || `Analyze and explain the significance of this development for UPSC: ${topic.title}`;
     
     setHistory((prev) => [...prev, { q: questionText, a: "Thinking..." }]);
+    setQuestion(""); // Clear input after asking
     
     try {
-      const response = await askArticle(questionText, topic);
+      const response = await askArticle(questionText, contextTopic);
       const answer = response.data?.answer || "No answer received.";
       
       setHistory((prev) => {
         const newHistory = [...prev];
-        newHistory[newHistory.length - 1].a = answer;
+        const lastIndex = newHistory.length - 1;
+        if (lastIndex >= 0) {
+            newHistory[lastIndex].a = answer;
+        }
         return newHistory;
       });
     } catch (err) {
       setHistory((prev) => {
         const newHistory = [...prev];
-        newHistory[newHistory.length - 1].a = "Unable to fetch an answer right now.";
+        const lastIndex = newHistory.length - 1;
+        if (lastIndex >= 0) {
+            newHistory[lastIndex].a = "Unable to fetch an answer right now. Please try again.";
+        }
         return newHistory;
       });
     }
   };
+
 
   const handleRefresh = async () => {
     if (cooldown > 0) {
