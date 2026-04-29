@@ -39,6 +39,22 @@ function Quiz() {
     startNewQuiz(totalQuestions);
   };
 
+  const handleRestart = () => {
+    if (isStarting) return;
+    
+    // Fully reset all state to prevent stale UI issues
+    setScore(0);
+    setCurrentIndex(0);
+    setSelectedAnswer("");
+    setResult(null);
+    setAnswered(false);
+    setQuizFinished(false);
+    setQuestions([]); // Clear old questions to force a fresh render
+    
+    // Immediately fetch fresh questions
+    startNewQuiz(totalQuestions);
+  };
+
   const handleSubmit = () => {
     if (!currentQuestion || !selectedAnswer || answered) return;
 
@@ -76,7 +92,7 @@ function Quiz() {
           Practice UPSC-style questions across polity, economy, geography, and current affairs.
         </p>
 
-        {!questions.length && !isStarting && (
+        {!questions.length && !isStarting && !quizFinished && (
           <div className="mb-8 flex items-center gap-4">
             <select
               value={totalQuestions}
@@ -168,7 +184,7 @@ function Quiz() {
           </div>
         )}
 
-        {quizFinished && (
+        {quizFinished && !isStarting && (
           <div className="py-10 text-center">
             <h2 className="mb-4 text-4xl font-bold text-gray-900 dark:text-white">Quiz Complete!</h2>
             <p className="mb-8 text-xl text-gray-600 dark:text-gray-300">
@@ -176,8 +192,9 @@ function Quiz() {
             </p>
             <div className="flex justify-center gap-4">
                 <button
-                onClick={() => setQuestions([])}
-                className="rounded-xl bg-orange-600 px-10 py-4 font-bold text-white hover:bg-orange-700 transition-all"
+                onClick={handleRestart}
+                disabled={isStarting}
+                className="rounded-xl bg-orange-600 px-10 py-4 font-bold text-white hover:bg-orange-700 transition-all active:scale-95 disabled:opacity-50"
                 >
                 Restart
                 </button>
