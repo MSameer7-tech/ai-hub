@@ -131,41 +131,42 @@ function Quiz() {
         </div>
 
         {!questions.length && !isStarting && !quizFinished && (
-          <div className="mb-8 flex flex-wrap items-center gap-4 mt-6">
-            <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold uppercase text-gray-400">Questions</label>
+          <div className="mb-8 flex flex-wrap items-center gap-6 mt-8">
+            <div className="flex flex-col gap-2 min-w-[200px]">
+                <label className="text-[11px] font-black uppercase tracking-widest text-gray-400">Number of Questions</label>
                 <select
                 value={totalQuestions}
                 onChange={(e) => setTotalQuestions(Number(e.target.value))}
-                className="rounded-xl border border-gray-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-800"
+                className="rounded-2xl border border-gray-200 bg-white px-5 py-4 font-bold text-gray-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all"
                 >
                 <option value={5}>5 Questions</option>
                 <option value={10}>10 Questions</option>
-                <option value={20}>20 Questions</option>
+                <option value={15}>15 Questions</option>
                 </select>
             </div>
             
-            <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold uppercase text-gray-400">Difficulty</label>
+            <div className="flex flex-col gap-2 min-w-[200px]">
+                <label className="text-[11px] font-black uppercase tracking-widest text-gray-400">Select Difficulty</label>
                 <select
                 value={difficulty}
                 onChange={(e) => setDifficulty(e.target.value)}
-                className="rounded-xl border border-gray-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-800"
+                className="rounded-2xl border border-gray-200 bg-white px-5 py-4 font-bold text-gray-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all"
                 >
-                <option value="easy">Easy (30s)</option>
-                <option value="medium">Medium (45s)</option>
-                <option value="hard">Hard (60s)</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
                 </select>
             </div>
 
             <button
               onClick={handleStart}
-              className="mt-5 rounded-xl bg-blue-600 px-8 py-3.5 font-bold text-white hover:bg-blue-700 transition-all shadow-lg active:scale-95"
+              className="mt-6 rounded-2xl bg-blue-600 px-10 py-4.5 font-black text-white uppercase tracking-widest hover:bg-blue-700 transition-all shadow-[0_10px_30px_rgba(37,99,235,0.3)] active:scale-95"
             >
               Start Quiz
             </button>
           </div>
         )}
+
 
         {isStarting && <div className="py-10 text-center animate-pulse text-gray-400 font-medium">Fetching expert questions from OpenTriviaDB...</div>}
 
