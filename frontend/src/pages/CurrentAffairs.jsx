@@ -91,9 +91,10 @@ function CurrentAffairs({ theme, setTheme }) {
     setCooldown(10); // Minimal safety cooldown
   };
 
-  // Initial Load Only
+  // Initial Load Only - Disabled to ensure 100% manual control
   useEffect(() => {
-    fetchArticles();
+    // fetchArticles(); 
+    console.log("🛠️ [UPSC-MANUAL-SYNC] Mount complete. Waiting for user to click Refresh.");
   }, []);
 
 
@@ -224,6 +225,7 @@ function CurrentAffairs({ theme, setTheme }) {
           <div className="flex-1">
             <h1 className="text-4xl font-black tracking-tight text-gray-900 dark:text-white">
               Current <span className="text-blue-500">Affairs</span>
+              <span className="ml-3 rounded-lg bg-orange-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-orange-600 dark:text-orange-400">Manual Sync Mode</span>
             </h1>
             <p className="mt-2 text-gray-500 dark:text-neutral-400">
               Browse summaries and ask questions grounded in the current dataset.
@@ -246,7 +248,7 @@ function CurrentAffairs({ theme, setTheme }) {
                         className={`group flex items-center gap-2 rounded-full border-2 px-6 py-2.5 text-xs font-black uppercase tracking-widest transition-all duration-300 ${
                             cooldown > 0 || loading
                             ? "border-gray-100 bg-gray-50 text-gray-300 dark:border-white/5 dark:bg-white/5"
-                            : "border-blue-500 text-blue-600 hover:bg-blue-600 hover:text-white dark:border-blue-500/50 dark:text-blue-400 dark:hover:bg-blue-600 dark:hover:text-white"
+                            : "border-orange-500 text-orange-600 hover:bg-orange-600 hover:text-white dark:border-orange-500/50 dark:text-orange-400 dark:hover:bg-orange-600 dark:hover:text-white"
                         }`}
                     >
                         {loading && (
@@ -280,7 +282,18 @@ function CurrentAffairs({ theme, setTheme }) {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
-              {articles.map((topic, index) => (
+              {articles.length === 0 ? (
+                <div className="col-span-full flex flex-col items-center justify-center rounded-[40px] border-2 border-dashed border-gray-200 bg-white/50 p-20 dark:border-white/5 dark:bg-white/5">
+                   <p className="mb-6 text-sm font-bold uppercase tracking-[0.2em] text-gray-400">Data Feed Synchronized Manually</p>
+                   <button 
+                    onClick={handleRefresh}
+                    className="rounded-2xl bg-orange-600 px-10 py-5 text-xs font-black uppercase tracking-widest text-white shadow-2xl shadow-orange-600/30 transition-all hover:scale-105 hover:bg-orange-700"
+                   >
+                     Initialize News Feed
+                   </button>
+                </div>
+              ) : (
+                articles.map((topic, index) => (
                 <article
                   key={`${topic?.title || "topic"}-${index}`}
                   className="h-full"
