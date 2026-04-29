@@ -21,10 +21,21 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_parse_cors_origins(),
-    allow_credentials=False,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/")
+def root() -> dict[str, str]:
+    return {"status": "AI Hub backend running"}
+
+
+@app.get("/healthz")
+def healthz() -> dict[str, str]:
+    return {"status": "ok"}
+
 
 app.include_router(chat_router)
 app.include_router(current_affairs_router)

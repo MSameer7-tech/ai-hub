@@ -155,6 +155,14 @@ def clean_response(text: str) -> str:
     text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL | re.IGNORECASE)
     return " ".join(text.strip().split())
 
+
+def _coerce_text_response(result: str | dict, fallback: str) -> str:
+    if isinstance(result, dict):
+        return str(result.get("message") or fallback)
+    cleaned = clean_response(str(result))
+    return cleaned or fallback
+
+
 def call_llm_with_fallbacks(messages: list[dict], max_tokens: int, timeout: int) -> str | dict:
     last_message = messages[-1].get("content", "").strip() if messages else ""
     
@@ -229,13 +237,13 @@ def generate_response(
     return result_holder[0] if result_holder else fallback
 
 def get_llm_response(message: str) -> str:
-    return generate_response(
+    return _coerce_text_response(generate_response(
         system_prompt="You are a helpful AI assistant. Respond naturally and clearly.",
         user_prompt=message,
-    )
+    ), "Hey! I'm here 👍 Ask me anything again.")
 
 def get_contextual_response(context: str, question: str) -> str:
-    return generate_response(
+    return _coerce_text_response(generate_response(
         system_prompt=(
             "Answer using only the provided data. If the answer is not present, "
             'reply exactly: "Not available in current data". Keep the answer concise.'
@@ -243,10 +251,10 @@ def get_contextual_response(context: str, question: str) -> str:
         user_prompt=f"Data:\n{context[:2500]}\n\nQuestion: {question}",
         fallback="Not available in current data",
         max_tokens=150,
-    )
+    ), "Not available in current data")
 
 def generate_chat_title(message: str) -> str:
-    title = generate_response(
+    title = _coerce_text_response(generate_response(
         system_prompt=(
             "Generate concise conversation titles. Return only a 3-5 word title, "
             "with no quotes or punctuation unless necessary."
@@ -254,7 +262,7 @@ def generate_chat_title(message: str) -> str:
         user_prompt=f"Conversation starter:\n{message[:300]}",
         fallback="New Chat",
         max_tokens=20,
-    )
+    ), "New Chat")
     return title.strip().strip('"')[:60] or "New Chat"
 
 
