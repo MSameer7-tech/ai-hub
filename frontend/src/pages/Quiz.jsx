@@ -114,17 +114,6 @@ function Quiz({ theme, setTheme }) {
       {/* Background Decorative Glow */}
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500/5 blur-[120px] dark:bg-blue-500/10" />
 
-      {/* Floating Theme Toggle */}
-      <div className="fixed bottom-8 right-8 z-50">
-        <button
-          type="button"
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-white/80 shadow-2xl backdrop-blur-xl transition-all hover:scale-110 active:scale-95 dark:bg-[#111827]/80 dark:border dark:border-white/10"
-        >
-          <span className="text-2xl">{theme === "dark" ? "☀️" : "🌙"}</span>
-        </button>
-      </div>
-
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

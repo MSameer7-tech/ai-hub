@@ -248,14 +248,6 @@ function CurrentAffairs({ theme, setTheme }) {
                 <div className="flex items-center gap-3">
                     <button
                         type="button"
-                        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                        className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 transition-all hover:scale-110 active:scale-95 dark:bg-white/5 dark:backdrop-blur-md"
-                        title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
-                    >
-                        <span className="text-xl">{theme === "dark" ? "☀️" : "🌙"}</span>
-                    </button>
-                    <button
-                        type="button"
                         onClick={handleRefresh}
                         disabled={cooldown > 0 || loading}
                         className={`group flex items-center gap-2 rounded-full border-2 px-6 py-2.5 text-xs font-black uppercase tracking-widest transition-all duration-300 ${

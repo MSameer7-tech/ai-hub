@@ -269,17 +269,16 @@ export default function App() {
         />
 
         <div className="relative flex min-h-0 flex-1 flex-col">
-          <div className="absolute right-6 top-6 z-50">
-            {page !== "current" && page !== "quiz" && (
-              <button
-                  type="button"
-                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 transition-all hover:scale-110 active:scale-95 dark:bg-white/5 dark:backdrop-blur-md"
-                  title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
-              >
-                  <span className="text-xl">{theme === "dark" ? "☀️" : "🌙"}</span>
-              </button>
-            )}
+          {/* Global Floating Theme Toggle */}
+          <div className="fixed bottom-8 right-8 z-[9999]">
+            <button
+                type="button"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="flex h-14 w-14 items-center justify-center rounded-full bg-white/80 shadow-2xl backdrop-blur-xl transition-all hover:scale-110 active:scale-95 dark:bg-[#111827]/80 dark:border dark:border-white/10"
+                title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+                <span className="text-2xl">{theme === "dark" ? "☀️" : "🌙"}</span>
+            </button>
           </div>
 
           {page === "chat" && (
