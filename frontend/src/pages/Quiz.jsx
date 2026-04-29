@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { startQuiz } from "../services/api";
 
-function Quiz() {
+import { motion } from "framer-motion";
+2: 
+3: function Quiz({ theme, setTheme }) {
   const [totalQuestions, setTotalQuestions] = useState(5);
   const [difficulty, setDifficulty] = useState("medium");
   const [questions, setQuestions] = useState([]);
@@ -109,61 +111,125 @@ function Quiz() {
   }, [timerActive, timeLeft]);
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 text-gray-800 dark:text-white">
-      <div className="mx-auto max-w-4xl rounded-[28px] border border-gray-200 bg-white p-8 shadow-sm dark:border-neutral-700 dark:bg-neutral-900">
-        <div className="flex justify-between items-start mb-2">
-            <div>
-                <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">
-                UPSC & Current Affairs Quiz
+    <div className="relative flex-1 overflow-y-auto p-6 text-gray-800 dark:text-white">
+      {/* Background Decorative Glow */}
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500/5 blur-[120px] dark:bg-blue-500/10" />
+
+      {/* Floating Theme Toggle */}
+      <div className="fixed bottom-8 right-8 z-50">
+        <button
+          type="button"
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-white/80 shadow-2xl backdrop-blur-xl transition-all hover:scale-110 active:scale-95 dark:bg-[#111827]/80 dark:border dark:border-white/10"
+        >
+          <span className="text-2xl">{theme === "dark" ? "☀️" : "🌙"}</span>
+        </button>
+      </div>
+
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative mx-auto max-w-5xl rounded-[40px] border border-gray-100 bg-white p-10 shadow-2xl transition-all dark:border-white/5 dark:bg-[#111827]/60 dark:backdrop-blur-3xl"
+      >
+        <div className="flex flex-wrap items-start justify-between gap-6 mb-10">
+            <div className="max-w-2xl">
+                <h1 className="text-4xl font-black tracking-tight text-gray-900 dark:text-white">
+                UPSC <span className="text-blue-500">Expert Quiz</span>
                 </h1>
-                <p className="mt-2 text-gray-500 dark:text-neutral-300">
+                <p className="mt-3 text-lg text-gray-500 dark:text-neutral-400">
                 Practice UPSC-style questions across polity, economy, geography, and current affairs.
                 </p>
             </div>
             {questions.length > 0 && !quizFinished && (
-                <div className={`flex flex-col items-center justify-center w-16 h-16 rounded-full border-4 transition-colors ${
-                    timeLeft <= 10 ? 'border-red-500 text-red-500' : 'border-blue-500 text-blue-500'
+                <div className={`flex flex-col items-center justify-center w-20 h-20 rounded-full border-[5px] shadow-lg transition-all duration-300 ${
+                    timeLeft <= 10 
+                    ? 'border-red-500 text-red-500 shadow-red-500/20' 
+                    : 'border-blue-500 text-blue-500 shadow-blue-500/20'
                 }`}>
-                    <span className="text-xl font-black">{timeLeft}</span>
-                    <span className="text-[10px] uppercase font-bold">Sec</span>
+                    <span className="text-2xl font-black">{timeLeft}</span>
+                    <span className="text-[10px] uppercase font-bold tracking-tighter">Seconds</span>
                 </div>
             )}
         </div>
 
         {!questions.length && !isStarting && !quizFinished && (
-          <div className="mb-8 flex flex-wrap items-center gap-6 mt-8">
-            <div className="flex flex-col gap-2 min-w-[200px]">
-                <label className="text-[11px] font-black uppercase tracking-widest text-gray-400">Number of Questions</label>
-                <select
-                value={totalQuestions}
-                onChange={(e) => setTotalQuestions(Number(e.target.value))}
-                className="rounded-2xl border border-gray-200 bg-white px-5 py-4 font-bold text-gray-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all"
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 items-end gap-5">
+                <div className="flex flex-col gap-2.5">
+                    <label className="ml-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Quantity</label>
+                    <div className="relative">
+                        <select
+                        value={totalQuestions}
+                        onChange={(e) => setTotalQuestions(Number(e.target.value))}
+                        className="w-full appearance-none rounded-2xl border border-gray-200 bg-white px-6 py-4.5 font-bold text-gray-800 outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-white/10 dark:bg-white/5 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10"
+                        >
+                            <option value={5}>5 Questions</option>
+                            <option value={10}>10 Questions</option>
+                            <option value={15}>15 Questions</option>
+                        </select>
+                        <div className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 text-gray-400">
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <div className="flex flex-col gap-2.5">
+                    <label className="ml-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Difficulty</label>
+                    <div className="relative">
+                        <select
+                        value={difficulty}
+                        onChange={(e) => setDifficulty(e.target.value)}
+                        className="w-full appearance-none rounded-2xl border border-gray-200 bg-white px-6 py-4.5 font-bold text-gray-800 outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-white/10 dark:bg-white/5 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10"
+                        >
+                            <option value="easy">Easy Level</option>
+                            <option value="medium">Standard Level</option>
+                            <option value="hard">Advanced Level</option>
+                        </select>
+                        <div className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 text-gray-400">
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <button
+                onClick={handleStart}
+                className="group relative h-[62px] w-full overflow-hidden rounded-2xl bg-blue-600 px-8 font-black uppercase tracking-widest text-white transition-all hover:scale-[1.03] hover:bg-blue-700 hover:shadow-2xl hover:shadow-blue-600/30 active:scale-95"
                 >
-                <option value={5}>5 Questions</option>
-                <option value={10}>10 Questions</option>
-                <option value={15}>15 Questions</option>
-                </select>
-            </div>
-            
-            <div className="flex flex-col gap-2 min-w-[200px]">
-                <label className="text-[11px] font-black uppercase tracking-widest text-gray-400">Select Difficulty</label>
-                <select
-                value={difficulty}
-                onChange={(e) => setDifficulty(e.target.value)}
-                className="rounded-2xl border border-gray-200 bg-white px-5 py-4 font-bold text-gray-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all"
-                >
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-                </select>
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                    Initialize Quiz
+                    <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                </span>
+                </button>
             </div>
 
-            <button
-              onClick={handleStart}
-              className="mt-6 rounded-2xl bg-blue-600 px-10 py-4.5 font-black text-white uppercase tracking-widest hover:bg-blue-700 transition-all shadow-[0_10px_30px_rgba(37,99,235,0.3)] active:scale-95"
-            >
-              Start Quiz
-            </button>
+            <div className="flex flex-wrap gap-8 border-t border-gray-100 pt-6 dark:border-white/5">
+                <div className="flex items-center gap-3">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-500">
+                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </span>
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                        ~{totalQuestions * 1} Min Estimated
+                    </span>
+                </div>
+                <div className="flex items-center gap-3">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500/10 text-purple-500">
+                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </span>
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                        {difficulty === "hard" ? "Advanced Exam Standard" : "Curated Practice Set"}
+                    </span>
+                </div>
+            </div>
           </div>
         )}
 
@@ -272,7 +338,7 @@ function Quiz() {
             </div>
           </div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }

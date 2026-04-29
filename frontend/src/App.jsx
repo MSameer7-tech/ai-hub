@@ -270,7 +270,7 @@ export default function App() {
 
         <div className="relative flex min-h-0 flex-1 flex-col">
           <div className="absolute right-6 top-6 z-50">
-            {page !== "current" && (
+            {page !== "current" && page !== "quiz" && (
               <button
                   type="button"
                   onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -294,7 +294,7 @@ export default function App() {
             />
           )}
           {page === "current" && <CurrentAffairs theme={theme} setTheme={setTheme} />}
-          {page === "quiz" && <Quiz />}
+          {page === "quiz" && <Quiz theme={theme} setTheme={setTheme} />}
         </div>
       </div>
 
