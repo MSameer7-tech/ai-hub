@@ -148,9 +148,9 @@ function Chat({
 
   return (
     <div className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-white text-gray-900 transition-colors duration-300 dark:bg-gradient-to-b dark:from-[#0b0f1a] dark:to-[#05070d] dark:text-white">
-      <div className="absolute inset-0 -z-10 opacity-40 dark:opacity-40">
-        <div className="absolute left-1/4 top-0 h-[600px] w-[600px] bg-blue-100/50 blur-[180px] dark:bg-blue-600/10" />
-        <div className="absolute bottom-0 right-1/4 h-[600px] w-[600px] bg-purple-100/50 blur-[180px] dark:bg-purple-600/10" />
+      <div className="absolute inset-0 -z-10 opacity-30 dark:opacity-40">
+        <div className="absolute left-1/4 top-0 h-[600px] w-[600px] bg-blue-100/50 blur-[200px] dark:bg-blue-600/10" />
+        <div className="absolute bottom-0 right-1/4 h-[600px] w-[600px] bg-purple-100/50 blur-[200px] dark:bg-purple-600/10" />
       </div>
 
       {isEmpty ? (
@@ -161,37 +161,44 @@ function Chat({
           </div>
 
           <motion.h1
-            className="mb-2 text-center text-5xl font-black text-gray-900 dark:text-white"
-            initial={{ opacity: 0, y: 20 }}
+            className="mb-1 text-center text-5xl font-black text-gray-900 dark:text-white"
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
           >
             How can I help <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-purple-500">today?</span>
           </motion.h1>
 
-          <p className="mb-10 text-center text-sm font-medium uppercase tracking-[0.2em] text-gray-400 dark:text-white/30">
+          <p className="mb-8 text-center text-sm font-medium uppercase tracking-[0.2em] text-gray-400 dark:text-white/20">
             Ask anything or explore current affairs
           </p>
 
           <motion.div
-            className="group relative w-full max-w-2xl rounded-[32px] border border-gray-200 bg-white p-2 shadow-xl transition-all focus-within:border-blue-500/50 focus-within:ring-2 focus-within:ring-blue-500/30 dark:border-gray-700 dark:bg-white/[0.03] dark:backdrop-blur-2xl"
-            initial={{ scale: 0.95, opacity: 0 }}
+            className="group relative w-full max-w-2xl rounded-[32px] border border-gray-200 bg-white p-2 shadow-2xl transition-all focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 dark:border-gray-700 dark:bg-white/[0.03] dark:backdrop-blur-2xl"
+            initial={{ scale: 0.98, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
           >
-            <div className="flex items-center justify-between px-4 py-2">
-                <div className="flex items-center gap-3 rounded-full bg-gray-100 px-4 py-2 dark:bg-white/5">
-                    <span className={`text-[10px] font-black uppercase tracking-widest transition-colors duration-300 ${chatMode !== "upsc" ? "text-blue-600 dark:text-blue-400" : "text-gray-400 dark:text-gray-500"}`}>Normal</span>
+            <div className="absolute -inset-1 -z-10 rounded-[36px] bg-blue-500/5 opacity-0 blur-2xl transition-opacity group-focus-within:opacity-100 dark:bg-blue-500/10" />
+            
+            <div className="flex items-center justify-between px-4 py-1.5">
+                <div className="flex items-center gap-1 rounded-full bg-gray-100 p-1 dark:bg-white/5">
                     <button
                         type="button"
-                        onClick={() => updateChatConfig({ ...chatConfig, chatMode: chatMode === "upsc" ? "chat" : "upsc" })}
-                        className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors duration-300 ${chatMode === "upsc" ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-600"}`}
+                        onClick={() => updateChatConfig({ ...chatConfig, chatMode: "chat" })}
+                        className={`rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 ${chatMode !== "upsc" ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"}`}
                     >
-                        <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform duration-300 ${chatMode === "upsc" ? "translate-x-6" : "translate-x-1"}`} />
+                        Normal
                     </button>
-                    <span className={`text-[10px] font-black uppercase tracking-widest transition-colors duration-300 ${chatMode === "upsc" ? "text-blue-600 dark:text-blue-400" : "text-gray-400 dark:text-gray-500"}`}>UPSC Mode</span>
+                    <button
+                        type="button"
+                        onClick={() => updateChatConfig({ ...chatConfig, chatMode: "upsc" })}
+                        className={`rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 ${chatMode === "upsc" ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"}`}
+                    >
+                        UPSC Mode
+                    </button>
                 </div>
             </div>
 
-            <div className="flex items-end gap-3 px-4 pb-4 pt-2">
+            <div className="flex items-end gap-3 px-4 pb-4 pt-1.5">
               <textarea
                 ref={textareaRef}
                 value={input}
@@ -200,7 +207,7 @@ function Chat({
                 onKeyDown={handleKeyDown}
                 placeholder={loading ? "Analyzing..." : chatMode === "upsc" ? "Ask UPSC-focused questions..." : "Ask anything about current affairs or news..."}
                 rows={1}
-                className="max-h-[180px] min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2.5 text-lg text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-white/20 disabled:opacity-50"
+                className="max-h-[180px] min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2 text-lg text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-white/20 disabled:opacity-50"
               />
 
               <motion.button
@@ -228,7 +235,7 @@ function Chat({
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 onClick={() => handleSend(suggestion)}
-                className="rounded-full border border-gray-200 bg-white px-4 py-2 text-xs font-medium text-gray-500 shadow-sm transition-all hover:scale-105 hover:bg-gray-50 hover:text-blue-600 dark:border-white/5 dark:bg-white/5 dark:text-white/50 dark:hover:border-white/10 dark:hover:bg-white/10 dark:hover:text-white active:scale-95"
+                className="rounded-full border border-gray-200 bg-white px-5 py-2.5 text-xs font-bold text-gray-600 shadow-sm transition-all hover:scale-105 hover:bg-gray-50 hover:text-blue-600 dark:border-white/5 dark:bg-white/5 dark:text-white/60 dark:hover:border-white/10 dark:hover:bg-white/10 dark:hover:text-white active:scale-95"
               >
                 {suggestion}
               </motion.button>
@@ -298,18 +305,23 @@ function Chat({
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
             >
-              <div className="mx-auto max-w-4xl rounded-[32px] border border-gray-200 bg-white p-2 shadow-xl transition-all focus-within:border-blue-500/50 focus-within:ring-2 focus-within:ring-blue-500/30 dark:border-gray-700 dark:bg-white/[0.03] dark:backdrop-blur-2xl">
-                <div className="flex items-center justify-between px-4 py-2">
-                    <div className="flex items-center gap-3 rounded-full bg-gray-100 px-4 py-2 dark:bg-white/5">
-                        <span className={`text-[10px] font-black uppercase tracking-widest transition-colors duration-300 ${chatMode !== "upsc" ? "text-blue-600 dark:text-blue-400" : "text-gray-400 dark:text-gray-500"}`}>Normal</span>
+              <div className="mx-auto max-w-4xl rounded-[32px] border border-gray-200 bg-white p-2 shadow-2xl transition-all focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 dark:border-gray-700 dark:bg-white/[0.03] dark:backdrop-blur-2xl">
+                <div className="flex items-center justify-between px-4 py-1.5">
+                    <div className="flex items-center gap-1 rounded-full bg-gray-100 p-1 dark:bg-white/5">
                         <button
                             type="button"
-                            onClick={() => updateChatConfig({ ...chatConfig, chatMode: chatMode === "upsc" ? "chat" : "upsc" })}
-                            className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors duration-300 ${chatMode === "upsc" ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-600"}`}
+                            onClick={() => updateChatConfig({ ...chatConfig, chatMode: "chat" })}
+                            className={`rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 ${chatMode !== "upsc" ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"}`}
                         >
-                            <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform duration-300 ${chatMode === "upsc" ? "translate-x-6" : "translate-x-1"}`} />
+                            Normal
                         </button>
-                        <span className={`text-[10px] font-black uppercase tracking-widest transition-colors duration-300 ${chatMode === "upsc" ? "text-blue-600 dark:text-blue-400" : "text-gray-400 dark:text-gray-500"}`}>UPSC Mode</span>
+                        <button
+                            type="button"
+                            onClick={() => updateChatConfig({ ...chatConfig, chatMode: "upsc" })}
+                            className={`rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 ${chatMode === "upsc" ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"}`}
+                        >
+                            UPSC Mode
+                        </button>
                     </div>
                 </div>
 
