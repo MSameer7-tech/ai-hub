@@ -58,7 +58,7 @@ function Sidebar({
         <button
             type="button"
             onClick={onClose}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-gray-400 hover:text-white md:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-gray-500 hover:text-gray-900 md:hidden dark:bg-white/5 dark:text-gray-400 dark:hover:text-white"
         >
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -195,18 +195,13 @@ function Sidebar({
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-y-0 left-0 z-[150] h-full w-72 border-r border-white/10 bg-black/95 shadow-2xl backdrop-blur-2xl md:hidden"
+            className="fixed inset-y-0 left-0 z-[150] h-full w-72 border-r border-gray-200 bg-white/95 shadow-2xl backdrop-blur-2xl md:hidden dark:border-white/10 dark:bg-black/95"
           >
             {sidebarContent}
           </motion.aside>
         )}
       </AnimatePresence>
     </>
-  );
-}
-
-export default Sidebar;
-
   );
 }
 

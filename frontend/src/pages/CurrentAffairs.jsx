@@ -56,7 +56,7 @@ function CurrentAffairs({ theme, setTheme }) {
     setLoading(true);
     try {
       const timestamp = Date.now();
-      const url = `http://127.0.0.1:8000/current-affairs?ts=${timestamp}${isManualRefresh ? "&refresh=true" : ""}`;
+      const url = `http://10.57.209.178:8000/current-affairs?ts=${timestamp}${isManualRefresh ? "&refresh=true" : ""}`;
       
       console.log(`[API] Fetching articles: ${url}`);
       
@@ -105,7 +105,7 @@ function CurrentAffairs({ theme, setTheme }) {
     setIsFetchingFull(true);
     setFullArticle(null);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/news/full?url=${encodeURIComponent(url)}`, {
+      const res = await fetch(`http://10.57.209.178:8000/news/full?url=${encodeURIComponent(url)}`, {
           cache: "no-store"
       });
       const data = await res.json();
@@ -219,7 +219,7 @@ function CurrentAffairs({ theme, setTheme }) {
 
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 md:p-6 text-gray-800 dark:text-white no-scrollbar">
+    <div className="flex-1 overflow-y-auto p-4 md:p-6 text-gray-800 dark:text-white no-scrollbar pb-32 md:pb-6">
       <div>
         <div className="mb-8 md:mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
           <div className="flex-1">

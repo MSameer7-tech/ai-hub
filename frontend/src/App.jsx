@@ -252,7 +252,7 @@ export default function App() {
 
   return (
     <div className={theme === "dark" ? "dark" : ""}>
-      <div className="flex h-screen w-screen flex-col bg-white text-gray-900 transition-colors duration-300 dark:bg-black dark:text-white">
+      <div className="flex min-h-screen w-screen flex-col bg-white text-gray-900 transition-colors duration-300 dark:bg-black dark:text-white">
         
         {/* Mobile Header */}
         <div className="flex items-center justify-between border-b border-gray-200 bg-white/80 px-4 py-3 backdrop-blur-xl md:hidden dark:border-white/5 dark:bg-black/80">
@@ -308,7 +308,7 @@ export default function App() {
 
           <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
             {/* Global Floating Theme Toggle */}
-            <div className="fixed bottom-24 right-6 z-[9999] md:bottom-8 md:right-8">
+            <div className="fixed bottom-24 right-6 z-[9999] md:bottom-8 md:right-8 transition-all">
               <button
                 type="button"
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -335,9 +335,9 @@ export default function App() {
           </div>
         </div>
 
-        <footer className="hidden border-t border-gray-200 py-6 md:block dark:border-white/5">
+        <footer className="border-t border-gray-200 pb-32 pt-6 md:py-6 dark:border-white/5">
           <div className="flex justify-center px-6">
-            <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-gray-400 opacity-60 transition-opacity hover:opacity-100 dark:text-neutral-500">
+            <p className="text-center text-[10px] md:text-xs font-medium uppercase tracking-[0.3em] text-gray-400 opacity-60 transition-opacity hover:opacity-100 dark:text-white/40">
               Crafted by <span className="font-bold text-gray-600 dark:text-white/80">Mohammad Sameer</span>
             </p>
           </div>

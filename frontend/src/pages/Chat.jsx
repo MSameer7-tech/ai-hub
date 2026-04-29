@@ -222,8 +222,7 @@ function Chat({
             </div>
           </motion.div>
 
-          <div className="mt-8 flex w-full max-w-full items-center justify-center overflow-x-auto px-4 pb-4 no-scrollbar md:flex-wrap md:justify-center md:overflow-visible md:px-0">
-            <div className="flex flex-nowrap gap-3 md:flex-wrap md:justify-center">
+          <div className="mt-8 flex w-full max-w-2xl flex-col gap-3 px-4 pb-8 md:flex-row md:flex-wrap md:justify-center md:overflow-visible md:px-0">
                 {(messages.length > 0 
                     ? ["Explain this news", "Why is this important?", "UPSC analysis", "Key points from this"]
                     : chatMode === "upsc" 
@@ -232,15 +231,15 @@ function Chat({
                 ).map((suggestion) => (
                 <motion.button
                     key={suggestion}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={() => handleSend(suggestion)}
-                    className="whitespace-nowrap rounded-full border border-gray-200 bg-white px-4 md:px-5 py-2 md:py-2.5 text-[10px] md:text-xs font-bold text-gray-600 shadow-sm transition-all hover:scale-105 hover:bg-gray-50 hover:text-blue-600 dark:border-white/5 dark:bg-white/5 dark:text-white/60 dark:hover:border-white/10 dark:hover:bg-white/10 dark:hover:text-white active:scale-95"
+                    className="w-full md:w-auto rounded-2xl border border-gray-100 bg-gray-50/50 px-5 py-4 text-left text-[11px] md:text-xs font-bold text-gray-600 transition-all hover:bg-gray-100 hover:text-blue-600 dark:border-white/5 dark:bg-white/5 dark:text-white/70 dark:hover:border-white/10 dark:hover:bg-white/10 dark:hover:text-white md:rounded-full md:border md:bg-white md:px-5 md:py-2.5 md:text-center md:shadow-sm"
                 >
                     {suggestion}
                 </motion.button>
                 ))}
-            </div>
           </div>
 
 
@@ -265,7 +264,7 @@ function Chat({
 
           <div className="flex h-full min-h-0 flex-1 flex-col">
             <div className="flex-1 overflow-y-auto px-4 md:px-6 py-6 md:py-8 min-h-0 no-scrollbar">
-              <div className="mx-auto flex w-full max-w-3xl flex-col gap-2 md:gap-3 pb-24 md:pb-0">
+              <div className="mx-auto flex w-full max-w-3xl flex-col gap-2 md:gap-3 pb-36 md:pb-0">
                 {messages.map((msg, i) => (
                   <motion.div
                     key={i}
