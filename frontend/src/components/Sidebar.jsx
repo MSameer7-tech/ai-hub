@@ -42,7 +42,7 @@ function Sidebar({
   };
 
   return (
-    <aside className="h-full w-72 shrink-0 border-r border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-[#0A0A0B] dark:backdrop-blur-xl">
+    <aside className="h-full w-72 shrink-0 border-r border-gray-200 bg-gray-100 p-6 transition-colors duration-300 dark:border-white/10 dark:bg-[#0a0f1c] dark:backdrop-blur-xl">
       <div className="mb-10">
         <h1 className="text-2xl font-black tracking-tight text-gray-900 dark:text-white">
             AI <span className="text-blue-500">Hub</span>
@@ -61,10 +61,10 @@ function Sidebar({
               key={item.id}
               type="button"
               onClick={() => handleNavigate(item.id)}
-              className={`rounded-2xl px-4 py-3 text-left text-sm font-medium transition-all duration-200 ease-in-out ${
+              className={`rounded-2xl px-4 py-3 text-left text-sm font-medium transition-all duration-300 ease-in-out ${
                 isActive
-                  ? "border border-blue-500/40 bg-blue-500/20 text-blue-700 shadow-lg shadow-blue-100 dark:text-white dark:shadow-blue-950/50"
-                  : "bg-gray-50 text-gray-700 hover:bg-gray-100 dark:bg-white/5 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white"
+                  ? "border border-blue-500/40 bg-blue-500/20 text-blue-700 shadow-lg dark:text-white dark:bg-blue-600/20"
+                  : "bg-white text-gray-700 hover:bg-gray-200 dark:bg-white/5 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white"
               }`}
             >
               {item.label}
@@ -80,7 +80,7 @@ function Sidebar({
         <button
           type="button"
           onClick={onNewChat}
-          className="rounded-xl bg-blue-500 px-3 py-1.5 text-xs font-semibold text-white transition-all duration-200 ease-in-out hover:scale-105 active:scale-95"
+          className="rounded-xl bg-blue-500 px-3 py-1.5 text-xs font-semibold text-white transition-all duration-300 hover:scale-105 active:scale-95"
         >
           + New
         </button>
@@ -91,7 +91,7 @@ function Sidebar({
         placeholder="Search chats..."
         value={search}
         onChange={(event) => onSearchChange?.(event.target.value)}
-        className="mb-4 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 outline-none transition-all duration-200 ease-in-out placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-neutral-500"
+        className="mb-4 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 outline-none transition-all duration-300 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-neutral-500"
       />
 
       <div className="flex max-h-[calc(100vh-210px)] flex-col gap-2 overflow-y-auto pr-1">
@@ -101,10 +101,10 @@ function Sidebar({
           return (
             <div
               key={chat.id}
-              className={`group flex items-center justify-between gap-2 rounded-2xl px-3 py-2 transition-all duration-200 ease-in-out ${
+              className={`group flex items-center justify-between gap-2 rounded-2xl px-3 py-2 transition-all duration-300 ease-in-out ${
                 isSelected
-                  ? "border border-blue-500/40 bg-blue-500/10 shadow-inner shadow-blue-100 dark:shadow-slate-950/30"
-                  : "hover:bg-gray-100 dark:hover:bg-white/10"
+                  ? "border border-blue-500/40 bg-white shadow-inner dark:bg-blue-500/10"
+                  : "hover:bg-gray-200 dark:hover:bg-white/10"
               }`}
             >
               {editingChatId === chat.id ? (
@@ -132,14 +132,14 @@ function Sidebar({
                 </button>
               )}
 
-              <div className="flex shrink-0 gap-1 opacity-0 transition-all duration-200 ease-in-out group-hover:opacity-100">
+              <div className="flex shrink-0 gap-1 opacity-0 transition-all duration-300 group-hover:opacity-100">
                 <button
                   type="button"
                   onClick={() => onTogglePin?.(chat.id)}
-                  className={`rounded-lg px-2 py-1 text-xs transition-all duration-200 ease-in-out hover:scale-105 active:scale-95 ${
+                  className={`rounded-lg px-2 py-1 text-xs transition-all duration-300 hover:scale-105 active:scale-95 ${
                     chat.pinned
                       ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-700 dark:bg-white/10 dark:text-neutral-300"
+                      : "bg-gray-300 text-gray-700 dark:bg-white/10 dark:text-neutral-300"
                   }`}
                 >
                   📌
@@ -147,14 +147,14 @@ function Sidebar({
                 <button
                   type="button"
                   onClick={() => startRename(chat.id)}
-                  className="rounded-lg bg-gray-200 px-2 py-1 text-xs text-gray-700 transition-all duration-200 ease-in-out hover:scale-105 active:scale-95 dark:bg-white/10 dark:text-neutral-200"
+                  className="rounded-lg bg-gray-300 px-2 py-1 text-xs text-gray-700 transition-all duration-300 hover:scale-105 active:scale-95 dark:bg-white/10 dark:text-neutral-200"
                 >
                   ✏️
                 </button>
                 <button
                   type="button"
                   onClick={() => onDeleteChat?.(chat.id)}
-                  className="rounded-lg bg-red-950 px-2 py-1 text-xs text-red-200 transition-all duration-200 ease-in-out hover:scale-105 active:scale-95"
+                  className="rounded-lg bg-red-900 px-2 py-1 text-xs text-red-100 transition-all duration-300 hover:scale-105 active:scale-95"
                 >
                   ❌
                 </button>
@@ -164,6 +164,7 @@ function Sidebar({
         })}
       </div>
     </aside>
+
   );
 }
 

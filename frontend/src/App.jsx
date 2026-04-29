@@ -80,6 +80,7 @@ export default function App() {
 
   useEffect(() => {
     localStorage.setItem("theme", theme);
+    document.documentElement.classList.toggle("dark", theme === "dark");
   }, [theme]);
 
   useEffect(() => {
@@ -249,7 +250,7 @@ export default function App() {
 
   return (
     <div className={theme === "dark" ? "dark" : ""}>
-      <div className="flex h-screen w-screen flex-col bg-white text-gray-800 dark:bg-black dark:text-white">
+    <div className="flex h-screen w-screen flex-col bg-white text-gray-900 transition-colors duration-300 dark:bg-black dark:text-white">
       <div className="flex min-h-0 flex-1 bg-gray-50 dark:bg-black">
 
         <Sidebar
@@ -272,10 +273,10 @@ export default function App() {
             <button
                 type="button"
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm transition-all hover:scale-110 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:backdrop-blur-md"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 transition-all hover:scale-110 active:scale-95 dark:bg-white/5 dark:backdrop-blur-md"
                 title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
             >
-                {theme === "dark" ? "🌞" : "🌙"}
+                <span className="text-xl">{theme === "dark" ? "☀️" : "🌙"}</span>
             </button>
           </div>
 

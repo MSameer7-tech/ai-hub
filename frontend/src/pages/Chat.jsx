@@ -147,15 +147,10 @@ function Chat({
   const isEmpty = messages.length === 0;
 
   return (
-    <div className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-gradient-to-b from-[#0b0f1a] to-[#05070d] text-white">
-      <div className="absolute inset-0 -z-10 opacity-40">
-        <div className="absolute left-1/4 top-0 h-[600px] w-[600px] bg-blue-600/10 blur-[180px]" />
-        <div className="absolute bottom-0 right-1/4 h-[600px] w-[600px] bg-purple-600/10 blur-[180px]" />
-      </div>
-
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute left-1/3 top-0 h-96 w-96 bg-violet-500/10 blur-[120px]" />
-        <div className="absolute bottom-0 right-1/3 h-96 w-96 bg-indigo-500/10 blur-[120px]" />
+    <div className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-white text-gray-900 transition-colors duration-300 dark:bg-gradient-to-b dark:from-[#0b0f1a] dark:to-[#05070d] dark:text-white">
+      <div className="absolute inset-0 -z-10 opacity-40 dark:opacity-40">
+        <div className="absolute left-1/4 top-0 h-[600px] w-[600px] bg-blue-100/50 blur-[180px] dark:bg-blue-600/10" />
+        <div className="absolute bottom-0 right-1/4 h-[600px] w-[600px] bg-purple-100/50 blur-[180px] dark:bg-purple-600/10" />
       </div>
 
       {isEmpty ? (
@@ -166,33 +161,33 @@ function Chat({
           </div>
 
           <motion.h1
-            className="mb-2 text-center text-5xl font-black text-white"
+            className="mb-2 text-center text-5xl font-black text-gray-900 dark:text-white"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            How can I help <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">today?</span>
+            How can I help <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-purple-500">today?</span>
           </motion.h1>
 
-          <p className="mb-10 text-center text-sm font-medium uppercase tracking-[0.2em] text-white/30">
+          <p className="mb-10 text-center text-sm font-medium uppercase tracking-[0.2em] text-gray-400 dark:text-white/30">
             Ask anything or explore current affairs
           </p>
 
           <motion.div
-            className="group relative w-full max-w-2xl rounded-[32px] border border-gray-700 bg-white/[0.03] p-2 backdrop-blur-2xl transition-all focus-within:border-blue-500/50 focus-within:ring-2 focus-within:ring-blue-500/30"
+            className="group relative w-full max-w-2xl rounded-[32px] border border-gray-200 bg-white p-2 shadow-xl transition-all focus-within:border-blue-500/50 focus-within:ring-2 focus-within:ring-blue-500/30 dark:border-gray-700 dark:bg-white/[0.03] dark:backdrop-blur-2xl"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
           >
             <div className="flex items-center justify-between px-4 py-2">
-                <div className="flex items-center gap-2 rounded-full bg-white/5 px-3 py-1.5">
-                    <span className={`text-[10px] font-black uppercase tracking-wider ${chatMode !== "upsc" ? "text-blue-400" : "text-gray-500"}`}>Normal</span>
+                <div className="flex items-center gap-3 rounded-full bg-gray-100 px-4 py-2 dark:bg-white/5">
+                    <span className={`text-[10px] font-black uppercase tracking-widest transition-colors duration-300 ${chatMode !== "upsc" ? "text-blue-600 dark:text-blue-400" : "text-gray-400 dark:text-gray-500"}`}>Normal</span>
                     <button
                         type="button"
                         onClick={() => updateChatConfig({ ...chatConfig, chatMode: chatMode === "upsc" ? "chat" : "upsc" })}
-                        className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors ${chatMode === "upsc" ? "bg-blue-600" : "bg-gray-600"}`}
+                        className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors duration-300 ${chatMode === "upsc" ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-600"}`}
                     >
-                        <span className={`inline-block h-2.5 w-2.5 transform rounded-full bg-white transition-transform ${chatMode === "upsc" ? "translate-x-4.5" : "translate-x-1"}`} />
+                        <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform duration-300 ${chatMode === "upsc" ? "translate-x-6" : "translate-x-1"}`} />
                     </button>
-                    <span className={`text-[10px] font-black uppercase tracking-wider ${chatMode === "upsc" ? "text-blue-400" : "text-gray-500"}`}>UPSC Mode</span>
+                    <span className={`text-[10px] font-black uppercase tracking-widest transition-colors duration-300 ${chatMode === "upsc" ? "text-blue-600 dark:text-blue-400" : "text-gray-400 dark:text-gray-500"}`}>UPSC Mode</span>
                 </div>
             </div>
 
@@ -205,7 +200,7 @@ function Chat({
                 onKeyDown={handleKeyDown}
                 placeholder={loading ? "Analyzing..." : chatMode === "upsc" ? "Ask UPSC-focused questions..." : "Ask anything about current affairs or news..."}
                 rows={1}
-                className="max-h-[180px] min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2.5 text-lg text-white outline-none placeholder:text-white/20 disabled:opacity-50"
+                className="max-h-[180px] min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2.5 text-lg text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-white/20 disabled:opacity-50"
               />
 
               <motion.button
@@ -233,7 +228,7 @@ function Chat({
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 onClick={() => handleSend(suggestion)}
-                className="rounded-full border border-white/5 bg-white/5 px-4 py-2 text-xs font-medium text-white/50 transition-all hover:scale-105 hover:border-white/10 hover:bg-white/10 hover:text-white active:scale-95"
+                className="rounded-full border border-gray-200 bg-white px-4 py-2 text-xs font-medium text-gray-500 shadow-sm transition-all hover:scale-105 hover:bg-gray-50 hover:text-blue-600 dark:border-white/5 dark:bg-white/5 dark:text-white/50 dark:hover:border-white/10 dark:hover:bg-white/10 dark:hover:text-white active:scale-95"
               >
                 {suggestion}
               </motion.button>
@@ -251,11 +246,11 @@ function Chat({
         </div>
       ) : (
         <>
-          <div className="flex items-center justify-between border-b border-white/10 px-6 py-3">
-            <span className="text-sm text-gray-400">
+          <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-white/10">
+            <span className="text-sm font-semibold text-gray-700 dark:text-gray-400">
               {currentChatTitle || "New Chat"}
             </span>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs font-medium uppercase tracking-widest text-gray-400 dark:text-gray-500">
               AI Assistant
             </span>
           </div>
@@ -274,12 +269,12 @@ function Chat({
                     } mb-6 transition-all duration-200 ease-in-out`}
                   >
                     <div
-                      className={`max-w-[75%] px-5 py-4 rounded-3xl shadow-sm transition-all duration-200 ease-in-out ${
+                      className={`max-w-[75%] px-6 py-4 rounded-[28px] shadow-sm transition-all duration-300 ease-in-out ${
                         msg.role === "user"
-                          ? "bg-gradient-to-br from-blue-500 to-blue-700 text-white self-end"
-                          : "bg-[#111827]/80 backdrop-blur-lg border border-white/5 text-white/90 self-start"
+                          ? "bg-blue-600 text-white self-end shadow-blue-500/20 dark:bg-gradient-to-br dark:from-blue-500 dark:to-blue-700"
+                          : "bg-white border border-gray-200 text-gray-800 self-start dark:bg-[#111827]/80 dark:backdrop-blur-lg dark:border-white/5 dark:text-white/90"
                       }`}
-                      style={{ lineHeight: 1.6, whiteSpace: "pre-wrap" }}
+                      style={{ lineHeight: 1.7, whiteSpace: "pre-wrap" }}
                     >
                       {msg.isThinking ? (
                         <span className="animate-pulse text-white/40">Thinking...</span>
@@ -299,22 +294,22 @@ function Chat({
             </div>
 
             <motion.div
-              className="sticky bottom-0 border-t border-white/10 bg-white/5 p-6 backdrop-blur-3xl"
+              className="sticky bottom-0 border-t border-gray-200 bg-white/70 p-6 backdrop-blur-3xl transition-colors duration-300 dark:border-white/10 dark:bg-white/5"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
             >
-              <div className="mx-auto max-w-4xl rounded-[32px] border border-gray-700 bg-white/[0.03] p-2 transition-all focus-within:border-blue-500/50 focus-within:ring-2 focus-within:ring-blue-500/30">
+              <div className="mx-auto max-w-4xl rounded-[32px] border border-gray-200 bg-white p-2 shadow-xl transition-all focus-within:border-blue-500/50 focus-within:ring-2 focus-within:ring-blue-500/30 dark:border-gray-700 dark:bg-white/[0.03] dark:backdrop-blur-2xl">
                 <div className="flex items-center justify-between px-4 py-2">
-                    <div className="flex items-center gap-2 rounded-full bg-white/5 px-3 py-1">
-                        <span className={`text-[10px] font-black uppercase tracking-wider ${chatMode !== "upsc" ? "text-blue-400" : "text-gray-500"}`}>Standard</span>
+                    <div className="flex items-center gap-3 rounded-full bg-gray-100 px-4 py-2 dark:bg-white/5">
+                        <span className={`text-[10px] font-black uppercase tracking-widest transition-colors duration-300 ${chatMode !== "upsc" ? "text-blue-600 dark:text-blue-400" : "text-gray-400 dark:text-gray-500"}`}>Normal</span>
                         <button
                             type="button"
                             onClick={() => updateChatConfig({ ...chatConfig, chatMode: chatMode === "upsc" ? "chat" : "upsc" })}
-                            className={`relative inline-flex h-3.5 w-7 items-center rounded-full transition-colors ${chatMode === "upsc" ? "bg-blue-600" : "bg-gray-600"}`}
+                            className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors duration-300 ${chatMode === "upsc" ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-600"}`}
                         >
-                            <span className={`inline-block h-2.5 w-2.5 transform rounded-full bg-white transition-transform ${chatMode === "upsc" ? "translate-x-4" : "translate-x-0.5"}`} />
+                            <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform duration-300 ${chatMode === "upsc" ? "translate-x-6" : "translate-x-1"}`} />
                         </button>
-                        <span className={`text-[10px] font-black uppercase tracking-wider ${chatMode === "upsc" ? "text-blue-400" : "text-gray-500"}`}>UPSC Mode</span>
+                        <span className={`text-[10px] font-black uppercase tracking-widest transition-colors duration-300 ${chatMode === "upsc" ? "text-blue-600 dark:text-blue-400" : "text-gray-400 dark:text-gray-500"}`}>UPSC Mode</span>
                     </div>
                 </div>
 
@@ -327,7 +322,7 @@ function Chat({
                     onKeyDown={handleKeyDown}
                     placeholder={quotaExceeded ? "⚠️ Daily limit reached" : loading ? "Analyzing..." : chatMode === "upsc" ? "Ask UPSC-focused questions..." : "Ask anything about current affairs or news..."}
                     rows={1}
-                    className="max-h-[180px] min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2 text-white outline-none placeholder:text-white/20 disabled:opacity-50"
+                    className="max-h-[180px] min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2 text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-white/20 disabled:opacity-50"
                     />
                     <motion.button
                     type="button"
