@@ -32,10 +32,11 @@ def get_full_article(url: str):
         "authors": article_data["authors"],
         "publish_date": article_data["publish_date"],
         "overview": structured["overview"],
-        "points": structured["points"],
-        "why": structured["why"],
+        "key_points": structured["key_points"],
+        "why_it_matters": structured["why_it_matters"],
         "url": url
     }
+
 
 
 

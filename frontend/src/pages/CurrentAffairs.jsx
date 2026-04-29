@@ -504,11 +504,11 @@ function CurrentAffairs() {
                       <p className="text-gray-300 leading-relaxed text-[17px]">{fullArticle.overview}</p>
                     </div>
 
-                    {fullArticle.points?.length > 0 && (
+                    {fullArticle.key_points?.length > 0 && (
                       <div>
                         <h3 className="text-base font-black uppercase tracking-tighter text-blue-500 mb-4">Key Points</h3>
                         <ul className="space-y-4">
-                          {fullArticle.points.map((p, i) => (
+                          {fullArticle.key_points.map((p, i) => (
                             <li key={i} className="flex items-start gap-4 text-gray-300">
                               <span className="mt-2.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)]" />
                               <span className="leading-relaxed text-[16px]">{p}</span>
@@ -518,7 +518,7 @@ function CurrentAffairs() {
                       </div>
                     )}
 
-                    {fullArticle.why && (
+                    {fullArticle.why_it_matters && (
                       <div className="rounded-3xl bg-blue-600/10 p-6 border border-blue-500/20 shadow-inner">
                         <h3 className="text-base font-black uppercase tracking-tighter text-blue-400 mb-3 flex items-center gap-2">
                           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -526,10 +526,11 @@ function CurrentAffairs() {
                           </svg>
                           Why It Matters
                         </h3>
-                        <p className="text-gray-200 leading-relaxed text-[16px] font-medium">{fullArticle.why}</p>
+                        <p className="text-gray-200 leading-relaxed text-[16px] font-medium">{fullArticle.why_it_matters}</p>
                       </div>
                     )}
                   </div>
+
                 ) : fullArticle?.error ? (
                     <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-6 text-center">
                         <p className="text-red-400 font-semibold">UPSC Analysis Unavailable</p>

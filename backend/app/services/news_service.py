@@ -367,62 +367,70 @@ def clean_article_text(text: str) -> str:
     if not text:
         return ""
 
+    # Remove timestamps, newsroom labels, URLs, authors
+    text = re.sub(r"(Newsroom.*?|By .*?|http\S+|Written by.*?|Published:.*?)", "", text)
+
+    # Remove duplicate consecutive phrases
+    text = re.sub(r"\b(\w+\s+\w+)( \1\b)+", r"\1", text)
+
     # Normalize whitespace
     text = re.sub(r"\s+", " ", text)
+    return text.strip()
+
+def get_sentences(text: str):
+    # Filter for meaningful length to skip UI junk
+    return [s.strip() for s in text.split(". ") if len(s.strip()) > 35]
+
+def build_overview(sentences):
+    clean = []
+    # Skip sentences that look like reporting attribution or meta
+    for s in sentences:
+        lower = s.lower()
+        if any(x in lower for x in ["said", "according", "report", "link", "click", "read more"]):
+            continue
+        clean.append(s)
     
-    # Simple heuristic to remove redundant repeated words/phrases
-    words = text.split()
-    cleaned_words = []
-    for i, w in enumerate(words):
-        # If the same word repeats 3 times in a row, skip it
-        if i > 2 and w.lower() == words[i-1].lower() == words[i-2].lower():
-            continue
-        cleaned_words.append(w)
+    # Take first 3 clean sentences
+    result = ". ".join(clean[:3]).strip()
+    if result and not result.endswith("."):
+        result += "."
+    return result
+
+def extract_key_points(sentences):
+    keywords = [
+        "usd", "billion", "million", "%", "increase", "growth",
+        "agreement", "launched", "announced", "approved",
+        "election", "policy", "scheme", "report", "india", "economy", "gdp"
+    ]
+    points = []
+    for s in sentences:
+        if any(k in s.lower() for k in keywords):
+            # Target factual/dense sentences
+            if 45 < len(s) < 220:
+                clean_s = s.strip()
+                if clean_s.lower() not in [p.lower() for p in points]:
+                    points.append(clean_s)
+    return points[:5]
+
+def build_why_it_matters(sentences):
+    # Look for impact/significance keywords in the latter half of the article
+    impact_keywords = [
+        "impact", "boost", "help", "increase", "significance",
+        "important", "benefit", "growth", "economy", "future", "result"
+    ]
     
-    text = " ".join(cleaned_words)
-    lines = text.split(". ")
-
-    cleaned_lines = []
-    for line in lines:
-        line = line.strip()
-        if not line:
+    for s in reversed(sentences):
+        # Skip very short sentences or those with links
+        if len(s) < 40 or "http" in s.lower():
             continue
+            
+        if any(k in s.lower() for k in impact_keywords):
+            res = s.strip()
+            if not res.endswith("."):
+                res += "."
+            return res
 
-        lower = line.lower()
-
-        # ❌ Remove junk / ads / UI text
-        if any(keyword in lower for keyword in [
-            "subscribe",
-            "whatsapp channel",
-            "reliable and trusted",
-            "click here",
-            "sign up",
-            "login",
-            "advertisement",
-            "sponsored",
-            "read more",
-            "terms of use",
-            "privacy policy",
-            "copyright",
-            "all rights reserved",
-        ]):
-            continue
-
-        # ❌ Remove weird broken repeated lines or very short junk
-        if len(line) < 30:
-            continue
-
-        cleaned_lines.append(line)
-
-    # Remove duplicate lines
-    seen = set()
-    unique_lines = []
-    for line in cleaned_lines:
-        if line.lower() not in seen:
-            seen.add(line.lower())
-            unique_lines.append(line)
-
-    return ". ".join(unique_lines).strip()
+    return "This development is significant for economic and policy-level impact."
 
 def fetch_full_article(url: str):
     """
@@ -451,51 +459,23 @@ def fetch_full_article(url: str):
 
 def structure_article(text: str) -> dict:
     """
-    Convert cleaned text into STRICT UPSC-friendly structure:
+    Hardened UPSC-friendly structure:
     Overview, Key Points, Why It Matters.
-    Deterministic/Rule-based only.
+    Deterministic logic ONLY.
     """
-    if not text:
-        return {"overview": "", "points": [], "why": ""}
-
-    # Split into sentences
-    sentences = [s.strip() for s in text.split(". ") if len(s.strip()) > 10]
+    text = clean_article_text(text)
+    sentences = get_sentences(text)
 
     if not sentences:
-        return {"overview": "", "points": [], "why": ""}
-
-    # 1. Overview (max 3 sentences)
-    overview = ". ".join(sentences[:3]).strip()
-    if overview and not overview.endswith("."):
-        overview += "."
-
-    # 2. Key Points (3-5 bullet points)
-    # Target sentences with numbers, %, currencies, or key UPSC keywords
-    keywords = ["%", "USD", "billion", "million", "growth", "market", "India", "Government", "Policy", "economy", "GDP", "election"]
-    points = []
-    
-    # Start looking after the overview sentences
-    for s in sentences[3:]:
-        if any(k.lower() in s.lower() for k in keywords):
-            if 40 < len(s) < 250:
-                clean_s = s.strip()
-                if clean_s.lower() not in [p.lower() for p in points]:
-                    points.append(clean_s)
-        
-        if len(points) >= 5:
-            break
-
-    # 3. Why It Matters (last or second to last meaningful sentence)
-    why = sentences[-1].strip()
-    if len(sentences) > 5:
-        # Often the penultimate sentence is more descriptive of impact
-        why = sentences[-2].strip()
-        
-    if why and not why.endswith("."):
-        why += "."
+        return {
+            "overview": "Information unavailable for this source.",
+            "key_points": [],
+            "why_it_matters": "No impact analysis possible."
+        }
 
     return {
-        "overview": overview,
-        "points": points,
-        "why": why
+        "overview": build_overview(sentences),
+        "key_points": extract_key_points(sentences),
+        "why_it_matters": build_why_it_matters(sentences)
     }
+
