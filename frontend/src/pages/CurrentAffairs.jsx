@@ -320,7 +320,7 @@ function CurrentAffairs() {
                   
                   <h3 
                     title={topic?.title}
-                    className="mb-3 text-lg font-bold leading-tight text-white line-clamp-2 min-h-[3.5rem]"
+                    className="mb-3 text-lg font-bold leading-relaxed text-white line-clamp-2"
                     style={{
                         wordBreak: "break-word",
                         overflowWrap: "break-word"
@@ -338,6 +338,7 @@ function CurrentAffairs() {
                   >
                     {topic?.description || "No description"}
                   </p>
+
 
                   
                   <button
