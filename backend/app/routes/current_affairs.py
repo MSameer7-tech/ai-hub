@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.models.schemas import CurrentAffairsQueryRequest, AskArticleRequest
 from app.services.llm_service import get_contextual_response, generate_response
-from app.services.news_service import cached_news, get_news_context, fetch_full_article
+from app.services.news_service import cached_news, get_news_context, fetch_full_article, structure_article
 
 
 router = APIRouter()
@@ -20,7 +20,23 @@ def get_current_affairs(refresh: bool = False) -> list[dict[str, str]]:
 
 @router.get("/news/full")
 def get_full_article(url: str):
-    return fetch_full_article(url)
+    article_data = fetch_full_article(url)
+    
+    if "error" in article_data:
+        return article_data
+        
+    structured = structure_article(article_data["text"])
+    
+    return {
+        "title": article_data["title"],
+        "authors": article_data["authors"],
+        "publish_date": article_data["publish_date"],
+        "intro": structured["intro"],
+        "points": structured["points"],
+        "conclusion": structured["conclusion"],
+        "url": url
+    }
+
 
 
 @router.post("/current-affairs/query")

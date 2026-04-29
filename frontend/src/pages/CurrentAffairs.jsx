@@ -495,23 +495,45 @@ function CurrentAffairs() {
                     <div className="h-4 w-5/6 animate-pulse rounded bg-gray-800" />
                     <div className="h-4 w-full animate-pulse rounded bg-gray-800" />
                     <div className="h-4 w-4/6 animate-pulse rounded bg-gray-800" />
-                    <p className="text-center text-xs text-gray-500 uppercase tracking-widest">Fetching full content from source...</p>
+                    <p className="text-center text-xs text-gray-500 uppercase tracking-widest">Processing UPSC-style summary...</p>
                   </div>
-                ) : fullArticle?.text ? (
-                  <div 
-                    className="prose prose-invert max-w-none whitespace-pre-wrap text-gray-300 leading-relaxed" 
-                    style={{ fontSize: "16px" }}
-                  >
-                    {fullArticle.text}
+                ) : fullArticle?.intro ? (
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-sm font-black uppercase tracking-wider text-blue-500 mb-2">Overview</h3>
+                      <p className="text-gray-300 leading-relaxed">{fullArticle.intro}</p>
+                    </div>
+
+                    {fullArticle.points?.length > 0 && (
+                      <div>
+                        <h3 className="text-sm font-black uppercase tracking-wider text-blue-500 mb-3">Key Facts & Figures</h3>
+                        <ul className="space-y-3">
+                          {fullArticle.points.map((p, i) => (
+                            <li key={i} className="flex items-start gap-3 text-gray-300">
+                              <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-500" />
+                              <span className="leading-relaxed">{p}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {fullArticle.conclusion && (
+                      <div className="rounded-2xl bg-blue-500/5 p-5 border border-blue-500/10">
+                        <h3 className="text-sm font-black uppercase tracking-wider text-blue-500 mb-2">Key Takeaway</h3>
+                        <p className="text-gray-300 leading-relaxed italic">"{fullArticle.conclusion}"</p>
+                      </div>
+                    )}
                   </div>
                 ) : fullArticle?.error ? (
                     <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-center">
-                        <p className="text-red-400">Unable to scrape the full article. The site may be blocking direct access.</p>
+                        <p className="text-red-400">Unable to structure the full article. Direct scraping may be blocked by the source.</p>
                         <p className="mt-2 text-sm text-gray-400">{selectedArticle.description}</p>
                     </div>
                 ) : (
                   <p className="text-gray-300 leading-relaxed">{selectedArticle.description}</p>
                 )}
+
               </div>
               
               <div className="mt-10 flex items-center justify-between border-t border-white/10 pt-6">

@@ -439,4 +439,48 @@ def fetch_full_article(url: str):
             "details": str(e)
         }
 
+def structure_article(text: str) -> dict:
+    """
+    Convert cleaned text into UPSC-friendly structure:
+    Intro, Key Points, Conclusion.
+    Deterministic/Rule-based only.
+    """
+    if not text:
+        return {"intro": "", "points": [], "conclusion": ""}
 
+    # Split into sentences (simple period based)
+    sentences = [s.strip() for s in text.split(". ") if len(s.strip()) > 5]
+
+    if not sentences:
+        return {"intro": "", "points": [], "conclusion": ""}
+
+    # Intro = first 2 meaningful sentences
+    intro = ". ".join(sentences[:2]).strip()
+    if not intro.endswith("."):
+        intro += "."
+
+    # Key points = sentences containing numbers, %, currencies, or key UPSC keywords
+    keywords = ["%", "USD", "billion", "million", "growth", "market", "India", "Government", "Policy", "economy", "GDP"]
+    points = []
+    
+    for s in sentences:
+        if any(k.lower() in s.lower() for k in keywords):
+            # Avoid too short or too long lines
+            if 40 < len(s) < 300:
+                clean_s = s.strip()
+                if clean_s not in points:
+                    points.append(clean_s)
+        
+        if len(points) >= 5:
+            break
+
+    # Conclusion = last meaningful sentence
+    conclusion = sentences[-1].strip()
+    if not conclusion.endswith("."):
+        conclusion += "."
+
+    return {
+        "intro": intro,
+        "points": points,
+        "conclusion": conclusion
+    }
