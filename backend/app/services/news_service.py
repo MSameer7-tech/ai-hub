@@ -396,32 +396,75 @@ def build_overview(sentences):
         result += "."
     return result
 
+def score_sentence(s: str) -> int:
+    score = 0
+    s_lower = s.lower()
+
+    # Strong signals (Factual density)
+    if any(x in s_lower for x in ["usd", "billion", "million", "%"]):
+        score += 3
+    if any(x in s_lower for x in ["announced", "launched", "approved", "signed", "implemented"]):
+        score += 2
+    if any(x in s_lower for x in ["india", "government", "policy", "scheme", "cabinet"]):
+        score += 2
+    if any(x in s_lower for x in ["growth", "increase", "impact", "boost", "development"]):
+        score += 1
+
+    # Penalize weak sentences (Reporting meta-commentary)
+    if any(x in s_lower for x in ["said", "according", "report", "stated", "told"]):
+        score -= 1
+
+    return score
+
 def extract_key_points(sentences):
-    keywords = [
-        "usd", "billion", "million", "%", "increase", "growth",
-        "agreement", "launched", "announced", "approved",
-        "election", "policy", "scheme", "report", "india", "economy", "gdp"
-    ]
-    points = []
+    # Score each sentence
+    scored = [(s, score_sentence(s)) for s in sentences]
+
+    # Sort by score descending
+    scored.sort(key=lambda x: x[1], reverse=True)
+
+    # Filter for reasonable length and positive score
+    points = [s for s, sc in scored if sc >= 1 and 45 < len(s) < 220]
+
+    # Remove duplicates while preserving order
+    unique = []
+    seen = set()
+    for p in points:
+        if p.lower() not in seen:
+            seen.add(p.lower())
+            unique.append(p)
+
+    return unique[:5]
+
+def ensure_minimum(points, sentences):
+    """
+    Ensure we have at least 3 points.
+    If not, pull from the highest quality remaining sentences.
+    """
+    if len(points) >= 3:
+        return points
+
+    # Pull any reasonable sentences that aren't already points
     for s in sentences:
-        if any(k in s.lower() for k in keywords):
-            # Target factual/dense sentences
-            if 45 < len(s) < 220:
-                clean_s = s.strip()
-                if clean_s.lower() not in [p.lower() for p in points]:
-                    points.append(clean_s)
-    return points[:5]
+        if s not in points and 50 < len(s) < 200:
+            if s.lower() not in [p.lower() for p in points]:
+                points.append(s)
+        if len(points) >= 3:
+            break
+
+    return points
 
 def build_why_it_matters(sentences):
     # Look for impact/significance keywords in the latter half of the article
     impact_keywords = [
         "impact", "boost", "help", "increase", "significance",
-        "important", "benefit", "growth", "economy", "future", "result"
+        "important", "benefit", "growth", "economy", "future", "result",
+        "market", "jobs", "infrastructure"
     ]
     
     for s in reversed(sentences):
         # Skip very short sentences or those with links
-        if len(s) < 40 or "http" in s.lower():
+        if len(s) < 50 or "http" in s.lower():
             continue
             
         if any(k in s.lower() for k in impact_keywords):
@@ -430,7 +473,7 @@ def build_why_it_matters(sentences):
                 res += "."
             return res
 
-    return "This development is significant for economic and policy-level impact."
+    return "This development is important due to its potential impact on economic growth and policy-level expansion."
 
 def fetch_full_article(url: str):
     """
@@ -459,23 +502,30 @@ def fetch_full_article(url: str):
 
 def structure_article(text: str) -> dict:
     """
-    Hardened UPSC-friendly structure:
+    Smart Extraction Engine:
     Overview, Key Points, Why It Matters.
-    Deterministic logic ONLY.
+    Deterministic scoring ONLY.
     """
     text = clean_article_text(text)
     sentences = get_sentences(text)
 
     if not sentences:
         return {
-            "overview": "Information unavailable for this source.",
-            "key_points": [],
+            "overview": "Detailed information unavailable for this source.",
+            "key_points": ["Source material too brief for analysis."],
             "why_it_matters": "No impact analysis possible."
         }
 
+    overview = build_overview(sentences)
+    
+    key_points = extract_key_points(sentences)
+    # Guarantee at least 3 points
+    key_points = ensure_minimum(key_points, sentences)
+
     return {
-        "overview": build_overview(sentences),
-        "key_points": extract_key_points(sentences),
+        "overview": overview,
+        "key_points": key_points,
         "why_it_matters": build_why_it_matters(sentences)
     }
+
 
