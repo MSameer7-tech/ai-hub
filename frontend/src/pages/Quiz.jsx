@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { startQuiz } from "../services/api";
-
 import { motion } from "framer-motion";
-2: 
-3: function Quiz({ theme, setTheme }) {
+
+function Quiz({ theme, setTheme }) {
   const [totalQuestions, setTotalQuestions] = useState(5);
   const [difficulty, setDifficulty] = useState("medium");
   const [questions, setQuestions] = useState([]);
