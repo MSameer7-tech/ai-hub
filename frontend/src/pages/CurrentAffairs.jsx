@@ -49,16 +49,23 @@ function CurrentAffairs() {
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [fullArticle, setFullArticle] = useState(null);
   const [isFetchingFull, setIsFetchingFull] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const fetchArticles = async (refresh = false) => {
+  const fetchArticles = async (isManualRefresh = false) => {
     setLoading(true);
 
     try {
       console.log("Fetching articles...");
-      const url = refresh
-        ? "http://127.0.0.1:8000/current-affairs?refresh=true"
-        : "http://127.0.0.1:8000/current-affairs";
-      const res = await fetch(url);
+      const url = `http://127.0.0.1:8000/current-affairs${isManualRefresh ? "?refresh=true" : ""}`;
+      
+      const res = await fetch(url, {
+        cache: "no-store",
+        headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+        }
+      });
+      
       const data = await res.json();
 
       if (!Array.isArray(data)) {
@@ -87,7 +94,9 @@ function CurrentAffairs() {
     setIsFetchingFull(true);
     setFullArticle(null);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/news/full?url=${encodeURIComponent(url)}`);
+      const res = await fetch(`http://127.0.0.1:8000/news/full?url=${encodeURIComponent(url)}`, {
+          cache: "no-store"
+      });
       const data = await res.json();
       setFullArticle(data);
     } catch (err) {
@@ -106,15 +115,25 @@ function CurrentAffairs() {
 
   useEffect(() => {
     const savedHistory = localStorage.getItem("currentAffairsHistory");
-
     if (savedHistory) {
       setHistory(JSON.parse(savedHistory));
     }
   }, []);
 
+  // Handle auto-refresh every 120 seconds
   useEffect(() => {
-    fetchArticles();
+    const interval = setInterval(() => {
+      setRefreshKey(prev => prev + 1);
+    }, 120000); 
+
+    return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    fetchArticles(refreshKey > 0);
+  }, [refreshKey]);
+
+
 
   useEffect(() => {
     if (cooldown === 0) {

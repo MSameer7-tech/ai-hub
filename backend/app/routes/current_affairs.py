@@ -6,16 +6,27 @@ from app.services.llm_service import get_contextual_response, generate_response
 from app.services.news_service import cached_news, get_news_context, fetch_full_article, structure_article
 
 
+from fastapi.responses import JSONResponse
+
 router = APIRouter()
 
 
 @router.get("/current-affairs")
-def get_current_affairs(refresh: bool = False) -> list[dict[str, str]]:
+def get_current_affairs(refresh: bool = False):
     if refresh:
+        data = cached_news(force_refresh=True, background_refresh=False) # Force synchronous refresh for immediate UI update
+    else:
+        data = cached_news(background_refresh=True)
 
-        return cached_news(force_refresh=True, background_refresh=True)
+    return JSONResponse(
+        content=data,
+        headers={
+            "Cache-Control": "no-store",
+            "Pragma": "no-cache",
+            "Expires": "0"
+        }
+    )
 
-    return cached_news(background_refresh=True)
 
 
 @router.get("/news/full")
