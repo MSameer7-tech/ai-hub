@@ -318,13 +318,27 @@ function CurrentAffairs() {
                     </div>
                   </div>
                   
-                  <h3 className="mb-3 text-lg font-bold leading-tight text-white line-clamp-2 min-h-[3.5rem]">
+                  <h3 
+                    title={topic?.title}
+                    className="mb-3 text-lg font-bold leading-tight text-white line-clamp-2 min-h-[3.5rem]"
+                    style={{
+                        wordBreak: "break-word",
+                        overflowWrap: "break-word"
+                    }}
+                  >
                     {topic?.title || "No title"}
                   </h3>
                   
-                  <p className="text-gray-400 dark:text-gray-400 line-clamp-3 text-sm leading-relaxed mb-6">
+                  <p 
+                    className="text-gray-400 dark:text-gray-400 line-clamp-3 text-sm leading-relaxed mb-6"
+                    style={{
+                        wordBreak: "break-word",
+                        overflowWrap: "break-word"
+                    }}
+                  >
                     {topic?.description || "No description"}
                   </p>
+
                   
                   <button
                     type="button"
