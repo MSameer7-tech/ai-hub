@@ -42,11 +42,13 @@ function Sidebar({
   };
 
   return (
-    <aside className="h-full w-72 shrink-0 border-r border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-white/5 dark:backdrop-blur-xl">
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold tracking-wide text-gray-900 dark:text-white">AI Hub</h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-neutral-400">
-          Conversations, news, and quiz flow.
+    <aside className="h-full w-72 shrink-0 border-r border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-[#0A0A0B] dark:backdrop-blur-xl">
+      <div className="mb-10">
+        <h1 className="text-2xl font-black tracking-tight text-gray-900 dark:text-white">
+            AI <span className="text-blue-500">Hub</span>
+        </h1>
+        <p className="mt-1 text-xs font-medium text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
+          Conversations, news, and quiz
         </p>
       </div>
 

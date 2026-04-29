@@ -250,27 +250,8 @@ export default function App() {
   return (
     <div className={theme === "dark" ? "dark" : ""}>
       <div className="flex h-screen w-screen flex-col bg-white text-gray-800 dark:bg-black dark:text-white">
-      <header
-        className="h-14 border-b border-gray-200 bg-white/70 shadow-[0_2px_10px_rgba(0,0,0,0.08)] backdrop-blur-md dark:border-neutral-800 dark:bg-black/70 dark:shadow-[0_2px_10px_rgba(0,0,0,0.3)]"
-      >
-        <div className="flex h-full items-center justify-between px-6">
-          <h1 className="text-lg font-semibold tracking-wide">AI Hub</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-400 dark:text-neutral-400">
-              Chat · Current Affairs · Quiz
-            </span>
-            <button
-              type="button"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="rounded-lg bg-neutral-800 px-3 py-1 text-sm text-white transition hover:scale-105 active:scale-95 dark:bg-neutral-800 dark:text-white"
-            >
-              {theme === "dark" ? "Light" : "Dark"}
-            </button>
-          </div>
-        </div>
-      </header>
-
       <div className="flex min-h-0 flex-1 bg-gray-50 dark:bg-black">
+
         <Sidebar
           activePage={page}
           setPage={setPage}

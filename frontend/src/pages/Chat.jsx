@@ -144,16 +144,9 @@ function Chat({
 
   return (
     <div className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#0A0A0B] text-white">
-      <div className="absolute right-6 top-4 z-10 flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 backdrop-blur-md">
-        <span className={`text-xs font-medium transition-colors ${chatMode !== "upsc" ? "text-white" : "text-gray-500"}`}>Normal</span>
-        <button
-          type="button"
-          onClick={() => updateChatConfig({ ...chatConfig, chatMode: chatMode === "upsc" ? "chat" : "upsc" })}
-          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${chatMode === "upsc" ? "bg-blue-600" : "bg-gray-600"}`}
-        >
-          <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${chatMode === "upsc" ? "translate-x-5" : "translate-x-1"}`} />
-        </button>
-        <span className={`text-xs font-medium transition-colors ${chatMode === "upsc" ? "text-blue-400" : "text-gray-500"}`}>UPSC</span>
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute left-1/4 top-0 h-[500px] w-[500px] bg-blue-600/10 blur-[150px]" />
+        <div className="absolute bottom-0 right-1/4 h-[500px] w-[500px] bg-purple-600/10 blur-[150px]" />
       </div>
 
       <div className="absolute inset-0 -z-10">
@@ -169,48 +162,76 @@ function Chat({
           </div>
 
           <motion.h1
-            className="mb-4 text-center text-4xl font-semibold text-white/90"
+            className="mb-2 text-center text-5xl font-black text-white"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            How can I help today?
+            How can I help <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">today?</span>
           </motion.h1>
 
-          <p className="mb-8 text-center text-white/40">
+          <p className="mb-10 text-center text-sm font-medium uppercase tracking-[0.2em] text-white/30">
             Ask anything or explore current affairs
           </p>
 
           <motion.div
-            className="w-full max-w-xl rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl"
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
+            className="group relative w-full max-w-2xl rounded-[32px] border border-white/10 bg-white/[0.03] p-2 backdrop-blur-2xl transition-all focus-within:border-blue-500/50 focus-within:ring-4 focus-within:ring-blue-500/10"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
           >
-            <div className="flex items-end gap-3">
+            <div className="flex items-center justify-between px-4 py-2">
+                <div className="flex items-center gap-2 rounded-full bg-white/5 px-3 py-1.5">
+                    <span className={`text-[10px] font-black uppercase tracking-wider ${chatMode !== "upsc" ? "text-blue-400" : "text-gray-500"}`}>Standard</span>
+                    <button
+                        type="button"
+                        onClick={() => updateChatConfig({ ...chatConfig, chatMode: chatMode === "upsc" ? "chat" : "upsc" })}
+                        className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors ${chatMode === "upsc" ? "bg-blue-600" : "bg-gray-600"}`}
+                    >
+                        <span className={`inline-block h-2.5 w-2.5 transform rounded-full bg-white transition-transform ${chatMode === "upsc" ? "translate-x-4.5" : "translate-x-1"}`} />
+                    </button>
+                    <span className={`text-[10px] font-black uppercase tracking-wider ${chatMode === "upsc" ? "text-blue-400" : "text-gray-500"}`}>UPSC Mode</span>
+                </div>
+            </div>
+
+            <div className="flex items-end gap-3 px-4 pb-4 pt-2">
               <textarea
                 ref={textareaRef}
                 value={input}
                 disabled={loading}
                 onChange={(event) => setInput(event.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={loading ? "Waiting for response..." : "Ask anything..."}
+                placeholder={loading ? "Analyzing..." : "Ask anything about current affairs, news, or UPSC..."}
                 rows={1}
-                className="max-h-[180px] min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2 text-white outline-none placeholder:text-white/30 disabled:opacity-50"
+                className="max-h-[180px] min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2.5 text-lg text-white outline-none placeholder:text-white/20 disabled:opacity-50"
               />
 
               <motion.button
                 type="button"
                 onClick={handleSend}
                 disabled={loading}
-                whileTap={{ scale: 0.95 }}
-                className="rounded-lg bg-white px-4 py-2 text-black transition-all duration-200 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.92 }}
+                className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700 disabled:opacity-50"
               >
-                <SendIcon className="h-4 w-4" />
+                <SendIcon className="h-5 w-5" />
               </motion.button>
             </div>
           </motion.div>
 
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            {["Explain this news", "UPSC Analysis", "Summarize current affairs"].map((suggestion) => (
+              <button
+                key={suggestion}
+                onClick={() => setInput(suggestion)}
+                className="rounded-full border border-white/5 bg-white/5 px-4 py-2 text-xs font-medium text-white/50 transition-all hover:border-white/10 hover:bg-white/10 hover:text-white"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+
           {loading && (
-            <div className="mt-4 text-sm text-white/50 animate-pulse">
+            <div className="mt-8 flex items-center gap-3 text-sm font-bold uppercase tracking-widest text-blue-500/50">
+              <span className="flex h-2 w-2 rounded-full bg-blue-500 animate-ping" />
               Thinking...
             </div>
           )}
@@ -264,30 +285,47 @@ function Chat({
             </div>
 
             <motion.div
-              className="sticky bottom-0 border-t border-white/10 bg-white/5 p-4 backdrop-blur-xl"
+              className="sticky bottom-0 border-t border-white/10 bg-white/5 p-6 backdrop-blur-3xl"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
             >
-              <div className="mx-auto flex max-w-4xl items-end gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-3 backdrop-blur-lg">
-                <textarea
-                  ref={textareaRef}
-                  value={input}
-                  disabled={loading || quotaExceeded}
-                  onChange={(event) => setInput(event.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder={quotaExceeded ? "⚠️ Daily limit reached" : loading ? "Waiting for response..." : "Ask anything..."}
-                  rows={1}
-                  className="max-h-[180px] min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2 text-white outline-none placeholder:text-white/30 disabled:opacity-50"
-                />
-                <motion.button
-                  type="button"
-                  onClick={handleSend}
-                  disabled={loading || quotaExceeded}
-                  whileTap={{ scale: 0.95 }}
-                  className="rounded-lg bg-white px-4 py-2 text-black transition-all duration-200 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50"
-                >
-                  <SendIcon className="h-4 w-4" />
-                </motion.button>
+              <div className="mx-auto max-w-4xl rounded-[28px] border border-white/10 bg-white/[0.03] p-2 transition-all focus-within:border-blue-500/50 focus-within:ring-4 focus-within:ring-blue-500/10">
+                <div className="flex items-center justify-between px-4 py-2">
+                    <div className="flex items-center gap-2 rounded-full bg-white/5 px-3 py-1">
+                        <span className={`text-[10px] font-black uppercase tracking-wider ${chatMode !== "upsc" ? "text-blue-400" : "text-gray-500"}`}>Standard</span>
+                        <button
+                            type="button"
+                            onClick={() => updateChatConfig({ ...chatConfig, chatMode: chatMode === "upsc" ? "chat" : "upsc" })}
+                            className={`relative inline-flex h-3.5 w-7 items-center rounded-full transition-colors ${chatMode === "upsc" ? "bg-blue-600" : "bg-gray-600"}`}
+                        >
+                            <span className={`inline-block h-2.5 w-2.5 transform rounded-full bg-white transition-transform ${chatMode === "upsc" ? "translate-x-4" : "translate-x-0.5"}`} />
+                        </button>
+                        <span className={`text-[10px] font-black uppercase tracking-wider ${chatMode === "upsc" ? "text-blue-400" : "text-gray-500"}`}>UPSC Mode</span>
+                    </div>
+                </div>
+
+                <div className="flex items-end gap-3 px-3 pb-3 pt-1">
+                    <textarea
+                    ref={textareaRef}
+                    value={input}
+                    disabled={loading || quotaExceeded}
+                    onChange={(event) => setInput(event.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder={quotaExceeded ? "⚠️ Daily limit reached" : loading ? "Analyzing..." : "Ask anything about current affairs, news, or UPSC..."}
+                    rows={1}
+                    className="max-h-[180px] min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2 text-white outline-none placeholder:text-white/20 disabled:opacity-50"
+                    />
+                    <motion.button
+                    type="button"
+                    onClick={handleSend}
+                    disabled={loading || quotaExceeded}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.92 }}
+                    className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700 disabled:opacity-50"
+                    >
+                    <SendIcon className="h-4.5 w-4.5" />
+                    </motion.button>
+                </div>
               </div>
             </motion.div>
           </div>
