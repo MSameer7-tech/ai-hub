@@ -143,10 +143,10 @@ function Chat({
   const isEmpty = messages.length === 0;
 
   return (
-    <div className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#0A0A0B] text-white">
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute left-1/4 top-0 h-[500px] w-[500px] bg-blue-600/10 blur-[150px]" />
-        <div className="absolute bottom-0 right-1/4 h-[500px] w-[500px] bg-purple-600/10 blur-[150px]" />
+    <div className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-gradient-to-b from-[#0b0f1a] to-[#05070d] text-white">
+      <div className="absolute inset-0 -z-10 opacity-40">
+        <div className="absolute left-1/4 top-0 h-[600px] w-[600px] bg-blue-600/10 blur-[180px]" />
+        <div className="absolute bottom-0 right-1/4 h-[600px] w-[600px] bg-purple-600/10 blur-[180px]" />
       </div>
 
       <div className="absolute inset-0 -z-10">
@@ -174,13 +174,13 @@ function Chat({
           </p>
 
           <motion.div
-            className="group relative w-full max-w-2xl rounded-[32px] border border-white/10 bg-white/[0.03] p-2 backdrop-blur-2xl transition-all focus-within:border-blue-500/50 focus-within:ring-4 focus-within:ring-blue-500/10"
+            className="group relative w-full max-w-2xl rounded-[32px] border border-gray-700 bg-white/[0.03] p-2 backdrop-blur-2xl transition-all focus-within:border-blue-500/50 focus-within:ring-2 focus-within:ring-blue-500/30"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
           >
             <div className="flex items-center justify-between px-4 py-2">
                 <div className="flex items-center gap-2 rounded-full bg-white/5 px-3 py-1.5">
-                    <span className={`text-[10px] font-black uppercase tracking-wider ${chatMode !== "upsc" ? "text-blue-400" : "text-gray-500"}`}>Standard</span>
+                    <span className={`text-[10px] font-black uppercase tracking-wider ${chatMode !== "upsc" ? "text-blue-400" : "text-gray-500"}`}>Normal</span>
                     <button
                         type="button"
                         onClick={() => updateChatConfig({ ...chatConfig, chatMode: chatMode === "upsc" ? "chat" : "upsc" })}
@@ -199,7 +199,7 @@ function Chat({
                 disabled={loading}
                 onChange={(event) => setInput(event.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={loading ? "Analyzing..." : "Ask anything about current affairs, news, or UPSC..."}
+                placeholder={loading ? "Analyzing..." : "Ask anything about current affairs or UPSC..."}
                 rows={1}
                 className="max-h-[180px] min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2.5 text-lg text-white outline-none placeholder:text-white/20 disabled:opacity-50"
               />
@@ -209,7 +209,7 @@ function Chat({
                 onClick={handleSend}
                 disabled={loading}
                 whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.92 }}
+                whileTap={{ scale: 0.95 }}
                 className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700 disabled:opacity-50"
               >
                 <SendIcon className="h-5 w-5" />
@@ -253,19 +253,20 @@ function Chat({
                 {messages.map((msg, i) => (
                   <motion.div
                     key={i}
-                    initial={{ opacity: 0, y: 8 }}
+                    initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25, ease: "easeOut" }}
                     className={`flex ${
                       msg.role === "user" ? "justify-end" : "justify-start"
-                    } transition-all duration-200 ease-in-out`}
+                    } mb-6 transition-all duration-200 ease-in-out`}
                   >
                     <div
-                      className={`max-w-[70%] px-4 py-3 rounded-2xl shadow-sm transition-all duration-200 ease-in-out ${
+                      className={`max-w-[75%] px-5 py-4 rounded-3xl shadow-sm transition-all duration-200 ease-in-out ${
                         msg.role === "user"
-                          ? "bg-blue-500 text-white self-end rounded-br-md"
-                          : "bg-white/5 backdrop-blur-lg border border-white/10 text-white/80 self-start rounded-bl-md"
+                          ? "bg-gradient-to-br from-blue-500 to-blue-700 text-white self-end"
+                          : "bg-[#111827]/80 backdrop-blur-lg border border-white/5 text-white/90 self-start"
                       }`}
-                      style={{ lineHeight: 1.5, whiteSpace: "pre-wrap" }}
+                      style={{ lineHeight: 1.6, whiteSpace: "pre-wrap" }}
                     >
                       {msg.isThinking ? (
                         <span className="animate-pulse text-white/40">Thinking...</span>
@@ -289,7 +290,7 @@ function Chat({
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
             >
-              <div className="mx-auto max-w-4xl rounded-[28px] border border-white/10 bg-white/[0.03] p-2 transition-all focus-within:border-blue-500/50 focus-within:ring-4 focus-within:ring-blue-500/10">
+              <div className="mx-auto max-w-4xl rounded-[32px] border border-gray-700 bg-white/[0.03] p-2 transition-all focus-within:border-blue-500/50 focus-within:ring-2 focus-within:ring-blue-500/30">
                 <div className="flex items-center justify-between px-4 py-2">
                     <div className="flex items-center gap-2 rounded-full bg-white/5 px-3 py-1">
                         <span className={`text-[10px] font-black uppercase tracking-wider ${chatMode !== "upsc" ? "text-blue-400" : "text-gray-500"}`}>Standard</span>
@@ -311,7 +312,7 @@ function Chat({
                     disabled={loading || quotaExceeded}
                     onChange={(event) => setInput(event.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder={quotaExceeded ? "⚠️ Daily limit reached" : loading ? "Analyzing..." : "Ask anything about current affairs, news, or UPSC..."}
+                    placeholder={quotaExceeded ? "⚠️ Daily limit reached" : loading ? "Analyzing..." : "Ask anything about current affairs or UPSC..."}
                     rows={1}
                     className="max-h-[180px] min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2 text-white outline-none placeholder:text-white/20 disabled:opacity-50"
                     />
@@ -320,7 +321,7 @@ function Chat({
                     onClick={handleSend}
                     disabled={loading || quotaExceeded}
                     whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.92 }}
+                    whileTap={{ scale: 0.95 }}
                     className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700 disabled:opacity-50"
                     >
                     <SendIcon className="h-4.5 w-4.5" />
