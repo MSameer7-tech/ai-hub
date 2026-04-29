@@ -177,7 +177,6 @@ function Chat({
             initial={{ scale: 0.98, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
           >
-            <div className="absolute -inset-1 -z-10 rounded-[36px] bg-blue-500/5 opacity-0 blur-2xl transition-opacity group-focus-within:opacity-100 dark:bg-blue-500/10" />
             
             <div className="flex items-center justify-between px-4 py-1.5">
                 <div className="flex items-center gap-1 rounded-full bg-gray-100 p-1 dark:bg-white/5">
