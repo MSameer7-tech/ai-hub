@@ -20,6 +20,8 @@ class QuizAnswerRequest(BaseModel):
 
 class QuizStartRequest(BaseModel):
     total: int = 5
+    difficulty: str | None = "medium"
+
 
 
 class AskArticleRequest(BaseModel):

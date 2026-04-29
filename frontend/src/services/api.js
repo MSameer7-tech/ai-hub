@@ -80,8 +80,9 @@ export const getCurrentAffairs = () =>
 export const askCurrentAffairs = (question) =>
   API.post("/current-affairs/query", { question });
 
-export const startQuiz = (total = 5) =>
-  API.post("/quiz/start", { total });
+export const startQuiz = (total = 5, difficulty = "medium") =>
+  API.post("/quiz/start", { total, difficulty });
+
 
 export const submitAnswer = (data) =>
   API.post("/quiz/answer", data);

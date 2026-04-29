@@ -11,7 +11,7 @@ VALID_CATEGORIES = [
     {"id": 24, "name": "Politics"},
 ]
 
-def fetch_quiz_questions(amount: int = 5):
+def fetch_quiz_questions(amount: int = 5, difficulty: str = None):
     """
     Fetch questions from OpenTriviaDB API restricted to relevant UPSC/Static GK categories.
     """
@@ -20,9 +20,14 @@ def fetch_quiz_questions(amount: int = 5):
         category = random.choice(VALID_CATEGORIES)
         
         url = f"https://opentdb.com/api.php?amount={amount}&category={category['id']}&type=multiple"
+        
+        if difficulty and difficulty.lower() in ["easy", "medium", "hard"]:
+            url += f"&difficulty={difficulty.lower()}"
+            
         response = requests.get(url, timeout=10)
         response.raise_for_status()
         res = response.json()
+
 
         questions = []
 
