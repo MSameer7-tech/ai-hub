@@ -269,11 +269,11 @@ function CurrentAffairs() {
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 items-stretch">
               {Array.from({ length: 6 }).map((_, index) => (
                 <div
                   key={index}
-                  className="animate-pulse rounded-3xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-800/70"
+                  className="animate-pulse rounded-3xl border border-gray-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-800/70"
                 >
                   <div className="mb-4 h-5 w-20 rounded-full bg-slate-700" />
                   <div className="mb-3 h-5 w-4/5 rounded bg-slate-700" />
@@ -284,80 +284,55 @@ function CurrentAffairs() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 items-stretch">
               {articles.map((topic, index) => (
                 <article
                   key={`${topic?.title || "topic"}-${index}`}
-                  onClick={() => setSelectedArticle(topic)}
+                  className="h-full"
                 >
                   <motion.div
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={{ scale: 1.02, translateY: -5 }}
                     whileTap={{ scale: 0.98 }}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="cursor-pointer rounded-xl border border-white/10 bg-white/5 p-5 shadow-sm backdrop-blur-lg transition hover:shadow-[0_0_20px_rgba(59,130,246,0.2)] dark:bg-white/5"
-                    style={{
-                      minHeight: "240px",
-                    }}
+                    onClick={() => setSelectedArticle(topic)}
+                    className="flex flex-col h-full cursor-pointer rounded-3xl border border-white/10 bg-white/5 p-7 shadow-sm backdrop-blur-lg transition-all hover:shadow-[0_20px_50px_rgba(59,130,246,0.15)] dark:bg-white/5"
                   >
-                  <div
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      padding: "6px 10px",
-                      borderRadius: "999px",
-                      background: "#1d4ed8",
-                      color: "#dbeafe",
-                      fontSize: "0.75rem",
-                      fontWeight: 700,
-                      marginBottom: "12px",
-                    }}
-                  >
-                    {topic?.tag || getCategoryTag(topic)}
-                  </div>
-                  <h3 style={{ margin: "0 0 10px", fontSize: "1.1rem" }}>
-                    <span
-                      style={{
-                        display: "-webkit-box",
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                      }}
+                  <div className="flex justify-between items-start mb-4">
+                    <div
+                        style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        padding: "6px 12px",
+                        borderRadius: "999px",
+                        background: "#1d4ed8",
+                        color: "#dbeafe",
+                        fontSize: "0.7rem",
+                        fontWeight: 800,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.05em",
+                        }}
                     >
-                      {topic?.title || "No title"}
-                    </span>
+                        {topic?.tag || getCategoryTag(topic)}
+                    </div>
+                  </div>
+                  
+                  <h3 className="mb-3 text-lg font-bold leading-tight text-white line-clamp-2 min-h-[3.5rem]">
+                    {topic?.title || "No title"}
                   </h3>
-                  <p
-                    className="text-gray-600 dark:text-gray-300 line-clamp-3"
-                    style={{
-                      margin: 0,
-                      lineHeight: 1.6,
-                      display: "-webkit-box",
-                      WebkitLineClamp: 3,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                    }}
-                  >
+                  
+                  <p className="text-gray-400 dark:text-gray-400 line-clamp-3 text-sm leading-relaxed mb-6">
                     {topic?.description || "No description"}
                   </p>
+                  
                   <button
                     type="button"
                     onClick={(event) => {
                       event.stopPropagation();
                       handleAskAboutTopic(topic);
                     }}
-                    className="transition-all duration-200 ease-in-out hover:scale-105 active:scale-95"
-                    style={{
-                      marginTop: "16px",
-                      border: "1px solid #2563eb",
-                      borderRadius: "12px",
-                      padding: "10px 14px",
-                      background: "transparent",
-                      color: "#93c5fd",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                    }}
+                    className="mt-auto w-full rounded-2xl border border-blue-500/50 bg-blue-500/10 py-3.5 text-xs font-black uppercase tracking-widest text-blue-400 transition-all hover:bg-blue-500 hover:text-white active:scale-95"
                   >
                     Ask about this
                   </button>
@@ -366,6 +341,7 @@ function CurrentAffairs() {
               ))}
             </div>
           )}
+
         </section>
 
         <section
