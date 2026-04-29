@@ -2,13 +2,24 @@ import requests
 import random
 import html
 
+# Relevant UPSC / Static GK Categories from OpenTriviaDB
+VALID_CATEGORIES = [
+    {"id": 9, "name": "General Knowledge"},
+    {"id": 17, "name": "Science & Nature"},
+    {"id": 22, "name": "Geography"},
+    {"id": 23, "name": "History"},
+    {"id": 24, "name": "Politics"},
+]
+
 def fetch_quiz_questions(amount: int = 5):
     """
-    Fetch questions from OpenTriviaDB API.
-    Amount is dynamic based on user selection.
+    Fetch questions from OpenTriviaDB API restricted to relevant UPSC/Static GK categories.
     """
     try:
-        url = f"https://opentdb.com/api.php?amount={amount}&type=multiple"
+        # Pick a random relevant category
+        category = random.choice(VALID_CATEGORIES)
+        
+        url = f"https://opentdb.com/api.php?amount={amount}&category={category['id']}&type=multiple"
         response = requests.get(url, timeout=10)
         response.raise_for_status()
         res = response.json()
@@ -23,14 +34,12 @@ def fetch_quiz_questions(amount: int = 5):
             options = [html.unescape(opt) for opt in incorrect + [correct]]
             random.shuffle(options)
 
-            # Map the correct answer to A, B, C, D for consistency if needed, 
-            # but the user requested comparing text. 
-            # Let's provide both text and a shuffled list.
-            
             questions.append({
                 "question": html.unescape(item.get("question", "")),
                 "options": options,
-                "correct_answer": html.unescape(correct)
+                "correct_answer": html.unescape(correct),
+                "category": html.unescape(item.get("category", category["name"])),
+                "difficulty": item.get("difficulty", "medium").capitalize()
             })
 
         return questions

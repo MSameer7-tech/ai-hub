@@ -25,7 +25,6 @@ function Quiz() {
 
     try {
       const res = await startQuiz(count);
-      // Access res.data.questions for axios, or handle accordingly
       const fetchedQuestions = res.data?.questions || [];
       setQuestions(fetchedQuestions);
     } catch (err) {
@@ -71,10 +70,10 @@ function Quiz() {
     <div className="flex-1 overflow-y-auto p-6 text-gray-800 dark:text-white">
       <div className="mx-auto max-w-4xl rounded-[28px] border border-gray-200 bg-white p-8 shadow-sm dark:border-neutral-700 dark:bg-neutral-900">
         <h1 className="mb-3 text-3xl font-semibold text-gray-900 dark:text-white">
-          General Knowledge Quiz
+          UPSC & Current Affairs Quiz
         </h1>
         <p className="mb-6 text-gray-500 dark:text-neutral-300">
-          Instant questions powered by OpenTriviaDB. No AI delays, no limits.
+          Practice UPSC-style questions across polity, economy, geography, and current affairs.
         </p>
 
         {!questions.length && !isStarting && (
@@ -97,13 +96,24 @@ function Quiz() {
           </div>
         )}
 
-        {isStarting && <div className="py-10 text-center animate-pulse">Loading trivia questions...</div>}
+        {isStarting && <div className="py-10 text-center animate-pulse">Fetching expert questions...</div>}
 
         {questions.length > 0 && !quizFinished && (
           <div>
             <div className="mb-6 flex justify-between items-center text-sm font-medium">
-              <span className="text-blue-500">Question {currentIndex + 1} of {questions.length}</span>
-              <span className="text-green-500">Score: {score}</span>
+              <div className="flex gap-2">
+                <span className="rounded-full bg-blue-500/10 px-3 py-1 text-blue-500">
+                  {currentQuestion.category}
+                </span>
+                <span className={`rounded-full px-3 py-1 ${
+                  currentQuestion.difficulty === 'Easy' ? 'bg-green-500/10 text-green-500' : 
+                  currentQuestion.difficulty === 'Hard' ? 'bg-red-500/10 text-red-500' : 
+                  'bg-orange-500/10 text-orange-500'
+                }`}>
+                  {currentQuestion.difficulty}
+                </span>
+              </div>
+              <span className="text-gray-400">Q {currentIndex + 1} / {questions.length}</span>
             </div>
 
             <div className="mb-8 rounded-2xl border border-gray-200 bg-gray-50 p-6 dark:border-neutral-700 dark:bg-neutral-800/50">
@@ -117,7 +127,7 @@ function Quiz() {
                 const isWrong = answered && isSelected && option !== currentQuestion.correct_answer;
 
                 let classes = "border-gray-200 bg-white dark:border-neutral-700 dark:bg-neutral-800";
-                if (isSelected) classes = "border-blue-500 bg-blue-500/10";
+                if (isSelected) classes = "border-blue-500 bg-blue-500/10 shadow-sm";
                 if (isCorrect) classes = "border-green-500 bg-green-500/20";
                 if (isWrong) classes = "border-red-500 bg-red-500/20";
 
@@ -160,14 +170,18 @@ function Quiz() {
 
         {quizFinished && (
           <div className="py-10 text-center">
-            <h2 className="mb-4 text-4xl font-bold">Quiz Finished!</h2>
-            <p className="mb-8 text-xl">Your Final Score: <span className="font-black text-blue-500">{score}</span> / {questions.length}</p>
-            <button
-              onClick={() => setQuestions([])}
-              className="rounded-xl bg-orange-600 px-10 py-4 font-bold text-white hover:bg-orange-700 transition-all"
-            >
-              Try Again
-            </button>
+            <h2 className="mb-4 text-4xl font-bold text-gray-900 dark:text-white">Quiz Complete!</h2>
+            <p className="mb-8 text-xl text-gray-600 dark:text-gray-300">
+              Final Score: <span className="font-black text-blue-500">{score}</span> / {questions.length}
+            </p>
+            <div className="flex justify-center gap-4">
+                <button
+                onClick={() => setQuestions([])}
+                className="rounded-xl bg-orange-600 px-10 py-4 font-bold text-white hover:bg-orange-700 transition-all"
+                >
+                Restart
+                </button>
+            </div>
           </div>
         )}
       </div>
