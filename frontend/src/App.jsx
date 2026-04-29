@@ -297,11 +297,11 @@ export default function App() {
         </div>
       </div>
 
-      <footer
-        className="border-t border-gray-200 text-gray-500 dark:border-neutral-800 dark:text-neutral-400"
-      >
-        <div className="px-6 py-4 text-sm">
-          Built with FastAPI + Ollama + React
+      <footer className="border-t border-gray-200 dark:border-white/5 py-6">
+        <div className="flex justify-center px-6">
+          <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-gray-400 opacity-60 transition-opacity hover:opacity-100 dark:text-neutral-500">
+            Crafted by <span className="font-bold text-gray-600 dark:text-white/80">Mohammad Sameer</span>
+          </p>
         </div>
       </footer>
       </div>
