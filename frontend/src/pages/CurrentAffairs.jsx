@@ -217,121 +217,85 @@ function CurrentAffairs() {
   return (
     <div className="flex-1 overflow-y-auto p-6 text-gray-800 dark:text-white">
       <div>
-        <h1 style={{ margin: "0 0 12px", fontSize: "2rem" }}>
-          Current Affairs
-        </h1>
-        <p className="mb-7 text-gray-500 dark:text-neutral-400">
-          Browse summaries and ask questions grounded in the current dataset.
-        </p>
-        <p className="mb-5 text-sm text-gray-400 dark:text-neutral-500">
-          Last updated: {lastUpdated ? lastUpdated.toLocaleTimeString() : "Not yet refreshed"}
-        </p>
-
-
-        <section style={{ marginBottom: "32px" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              gap: "16px",
-              marginBottom: "16px",
-              flexWrap: "wrap",
-            }}
-          >
-            <h2 style={{ margin: 0, fontSize: "1.25rem" }}>Topics</h2>
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h1 className="text-4xl font-black tracking-tight text-gray-900 dark:text-white">
+              Current <span className="text-blue-500">Affairs</span>
+            </h1>
+            <p className="mt-2 text-gray-500 dark:text-neutral-400">
+              Browse summaries and ask questions grounded in the current dataset.
+            </p>
+          </div>
+          <div className="flex flex-col items-end gap-2">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
+              <svg className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span>{lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString()}` : "Not refreshed"}</span>
+            </div>
             <button
               type="button"
               onClick={handleRefresh}
               disabled={cooldown > 0 || loading}
-              className="bg-gray-700 text-white"
-              style={{
-                border: "1px solid #4b5563",
-                borderRadius: "999px",
-                padding: "10px 16px",
-                cursor: cooldown > 0 || loading ? "not-allowed" : "pointer",
-              }}
+              className={`flex items-center gap-2 rounded-full border px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all duration-300 ${
+                cooldown > 0 || loading
+                  ? "border-gray-200 bg-gray-50 text-gray-400 dark:border-white/5 dark:bg-white/5"
+                  : "border-blue-500/50 bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white dark:text-blue-400 dark:hover:bg-blue-600 dark:hover:text-white"
+              }`}
             >
-              {loading
-                ? "Refreshing..."
-                : cooldown > 0
-                  ? `Refresh in ${cooldown}s`
-                  : "Refresh"}
+              {loading ? "Refreshing..." : cooldown > 0 ? `Wait ${cooldown}s` : "Refresh Now"}
             </button>
           </div>
+        </div>
 
+
+        <section className="mb-12">
           {loading ? (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 items-stretch">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
               {Array.from({ length: 6 }).map((_, index) => (
                 <div
                   key={index}
-                  className="animate-pulse rounded-3xl border border-gray-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-800/70"
+                  className="h-[380px] animate-pulse rounded-3xl border border-gray-100 bg-white p-8 dark:border-white/5 dark:bg-white/5"
                 >
-                  <div className="mb-4 h-5 w-20 rounded-full bg-slate-700" />
-                  <div className="mb-3 h-5 w-4/5 rounded bg-slate-700" />
-                  <div className="mb-2 h-4 w-full rounded bg-slate-700" />
-                  <div className="mb-2 h-4 w-full rounded bg-slate-700" />
-                  <div className="h-4 w-2/3 rounded bg-slate-700" />
+                  <div className="mb-6 h-6 w-24 rounded-full bg-gray-200 dark:bg-white/10" />
+                  <div className="mb-4 h-8 w-4/5 rounded-xl bg-gray-200 dark:bg-white/10" />
+                  <div className="mb-3 h-4 w-full rounded bg-gray-200 dark:bg-white/10" />
+                  <div className="mb-3 h-4 w-full rounded bg-gray-200 dark:bg-white/10" />
+                  <div className="mt-auto h-12 w-full rounded-2xl bg-gray-200 dark:bg-white/10" />
                 </div>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 items-stretch">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
               {articles.map((topic, index) => (
                 <article
                   key={`${topic?.title || "topic"}-${index}`}
                   className="h-full"
                 >
                   <motion.div
-                    whileHover={{ scale: 1.02, translateY: -5 }}
-                    whileTap={{ scale: 0.98 }}
-                    initial={{ opacity: 0, y: 10 }}
+                    whileHover={{ translateY: -10 }}
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
                     onClick={() => setSelectedArticle(topic)}
-                    className="flex flex-col h-full cursor-pointer rounded-3xl border border-white/10 bg-white/5 p-7 shadow-sm backdrop-blur-lg transition-all hover:shadow-[0_20px_50px_rgba(59,130,246,0.15)] dark:bg-white/5"
+                    className="group flex h-full cursor-pointer flex-col rounded-[32px] border border-gray-100 bg-white p-8 shadow-sm transition-all duration-500 hover:border-blue-500/20 hover:shadow-2xl hover:shadow-blue-500/10 dark:border-white/5 dark:bg-white/[0.03] dark:backdrop-blur-xl dark:hover:border-blue-500/30"
                   >
-                  <div className="flex justify-between items-start mb-4">
-                    <div
-                        style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        padding: "6px 12px",
-                        borderRadius: "999px",
-                        background: "#1d4ed8",
-                        color: "#dbeafe",
-                        fontSize: "0.7rem",
-                        fontWeight: 800,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.05em",
-                        }}
-                    >
+                  <div className="mb-6 flex items-center justify-between">
+                    <span className="rounded-full bg-blue-500 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-blue-500/30">
                         {topic?.tag || getCategoryTag(topic)}
-                    </div>
+                    </span>
                   </div>
                   
                   <h3 
                     title={topic?.title}
-                    className="mb-3 text-lg font-bold leading-relaxed text-white line-clamp-2"
-                    style={{
-                        wordBreak: "break-word",
-                        overflowWrap: "break-word"
-                    }}
+                    className="mb-4 text-xl font-extrabold leading-tight text-gray-900 line-clamp-2 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
                   >
                     {topic?.title || "No title"}
                   </h3>
                   
-                  <p 
-                    className="text-gray-400 dark:text-gray-400 line-clamp-3 text-sm leading-relaxed mb-6"
-                    style={{
-                        wordBreak: "break-word",
-                        overflowWrap: "break-word"
-                    }}
-                  >
+                  <p className="mb-8 text-sm leading-relaxed text-gray-500 line-clamp-3 dark:text-neutral-400">
                     {topic?.description || "No description"}
                   </p>
-
-
                   
                   <button
                     type="button"
@@ -339,111 +303,69 @@ function CurrentAffairs() {
                       event.stopPropagation();
                       handleAskAboutTopic(topic);
                     }}
-                    className="mt-auto w-full rounded-2xl border border-blue-500/50 bg-blue-500/10 py-3.5 text-xs font-black uppercase tracking-widest text-blue-400 transition-all hover:bg-blue-500 hover:text-white active:scale-95"
+                    className="mt-auto w-full rounded-2xl border-2 border-blue-500/30 py-4 text-xs font-black uppercase tracking-widest text-blue-600 transition-all duration-300 hover:bg-blue-600 hover:text-white hover:shadow-lg hover:shadow-blue-500/20 dark:text-blue-400 dark:hover:bg-blue-600 dark:hover:text-white"
                   >
-                    Ask about this
+                    Analyze for UPSC
                   </button>
                   </motion.div>
                 </article>
               ))}
             </div>
           )}
-
         </section>
 
-        <section
-            className="border border-gray-200 bg-white dark:border-neutral-700 dark:bg-neutral-800"
-          style={{
-            borderRadius: "28px",
-            padding: "24px",
-            boxShadow: "0 16px 40px rgba(15, 23, 42, 0.08)",
-          }}
-        >
-          <h2 style={{ margin: "0 0 12px", fontSize: "1.25rem" }}>
-            Ask a Question
+        <section className="relative mt-20 rounded-[40px] border border-gray-100 bg-gray-50/50 p-10 dark:border-white/5 dark:bg-white/5 dark:backdrop-blur-3xl">
+          <div className="absolute inset-x-0 -top-10 flex justify-center">
+            <div className="h-px w-2/3 bg-gradient-to-r from-transparent via-gray-200 to-transparent dark:via-white/10" />
+          </div>
+
+          <h2 className="mb-6 text-xl font-black tracking-tight text-gray-900 dark:text-white">
+            Study Deep: <span className="text-blue-500">Ask a Question</span>
           </h2>
-          <div
-            style={{
-              display: "flex",
-              gap: "12px",
-              alignItems: "flex-start",
-              flexWrap: "wrap",
-            }}
-          >
+
+          <div className="relative mb-10 flex flex-col gap-4 md:flex-row md:items-end">
             <textarea
               value={question}
               onChange={(event) => setQuestion(event.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask about the topics above..."
-              rows={3}
-              style={{
-                flex: 1,
-                minWidth: "260px",
-                resize: "vertical",
-                borderRadius: "16px",
-                border: "1px solid #374151",
-                padding: "14px 16px",
-                font: "inherit",
-                background: "#111827",
-                color: "#ffffff",
-              }}
+              placeholder="Ask anything about the topics above..."
+              rows={2}
+              className="flex-1 resize-none rounded-[28px] border border-gray-200 bg-white px-6 py-4 text-base text-gray-900 shadow-sm outline-none transition-all placeholder:text-gray-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-gray-700 dark:bg-[#111827]/50 dark:text-white dark:placeholder:text-white/20"
             />
             <button
               type="button"
               onClick={handleAskQuestion}
               disabled={!question.trim() || isAsking}
-              className="transition-all duration-200 ease-in-out hover:scale-105 active:scale-95"
-              style={{
-                border: "none",
-                borderRadius: "14px",
-                padding: "14px 20px",
-                background: !question.trim() || isAsking ? "#a8bfdc" : "#0f766e",
-                color: "#ffffff",
-                fontWeight: 600,
-                cursor:
-                  !question.trim() || isAsking ? "not-allowed" : "pointer",
-              }}
+              className={`rounded-2xl px-10 py-4 text-sm font-black uppercase tracking-widest transition-all duration-300 ${
+                !question.trim() || isAsking
+                  ? "bg-gray-200 text-gray-400 dark:bg-white/10 dark:text-neutral-600"
+                  : "bg-blue-600 text-white shadow-lg shadow-blue-600/20 hover:scale-105 hover:bg-blue-700 active:scale-95"
+              }`}
             >
-              {isAsking ? "Asking..." : "Ask"}
+              {isAsking ? "Analyzing..." : "Ask AI"}
             </button>
           </div>
 
-          <div
-            style={{
-              marginTop: "20px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "14px",
-            }}
-          >
+          <div className="flex flex-col gap-6">
             {history.length === 0 ? (
-              <div
-                className="bg-gray-800 border border-gray-700"
-                style={{
-                  minHeight: "72px",
-                  padding: "18px",
-                  borderRadius: "18px",
-                  lineHeight: 1.6,
-                }}
-              >
-                Your conversation history will appear here.
+              <div className="rounded-[28px] border border-dashed border-gray-200 bg-gray-50 p-10 text-center dark:border-white/10 dark:bg-white/5">
+                <p className="text-sm font-medium text-gray-400 uppercase tracking-[0.2em]">Your conversation history will appear here</p>
               </div>
             ) : (
               history.map((item, i) => (
                 <div
                   key={i}
-                  className="border border-gray-200 bg-white transition-all duration-200 ease-in-out dark:border-neutral-700 dark:bg-neutral-800"
-                  style={{
-                    padding: "18px",
-                    borderRadius: "18px",
-                    lineHeight: 1.6,
-                  }}
+                  className="rounded-[32px] border border-gray-100 bg-white p-8 shadow-sm transition-all dark:border-white/5 dark:bg-[#111827]/80 dark:backdrop-blur-xl"
                 >
-                  <p style={{ margin: "0 0 8px" }}>
-                    <b>Q:</b> {item.q}
+                  <div className="mb-4 flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-blue-500" />
+                    <span className="text-xs font-black uppercase tracking-widest text-blue-500">Analysis Session</span>
+                  </div>
+                  <p className="mb-4 text-base font-bold text-gray-900 dark:text-white">
+                    <span className="mr-2 text-blue-500">Q:</span> {item.q}
                   </p>
-                  <p style={{ margin: 0, whiteSpace: "pre-wrap" }}>
-                    <b>A:</b> {item.a}
+                  <p className="text-base leading-relaxed text-gray-600 dark:text-neutral-300">
+                    <span className="mr-2 font-black text-blue-500">A:</span> {item.a}
                   </p>
                 </div>
               ))
