@@ -199,7 +199,7 @@ function Chat({
                 disabled={loading}
                 onChange={(event) => setInput(event.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={loading ? "Analyzing..." : "Ask anything about current affairs or UPSC..."}
+                placeholder={loading ? "Analyzing..." : chatMode === "upsc" ? "Ask UPSC-focused questions..." : "Ask anything about current affairs or news..."}
                 rows={1}
                 className="max-h-[180px] min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2.5 text-lg text-white outline-none placeholder:text-white/20 disabled:opacity-50"
               />
@@ -218,11 +218,14 @@ function Chat({
           </motion.div>
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            {["Explain this news", "UPSC Analysis", "Summarize current affairs"].map((suggestion) => (
+            {(chatMode === "upsc" 
+                ? ["UPSC-style analysis", "Prelims facts", "Mains perspective", "Key points for exams"] 
+                : ["Summarize latest news", "Top 5 news today", "Explain in simple terms", "Why is this important?"]
+            ).map((suggestion) => (
               <button
                 key={suggestion}
                 onClick={() => setInput(suggestion)}
-                className="rounded-full border border-white/5 bg-white/5 px-4 py-2 text-xs font-medium text-white/50 transition-all hover:border-white/10 hover:bg-white/10 hover:text-white"
+                className="rounded-full border border-white/5 bg-white/5 px-4 py-2 text-xs font-medium text-white/50 transition-all hover:scale-105 hover:border-white/10 hover:bg-white/10 hover:text-white active:scale-95"
               >
                 {suggestion}
               </button>
@@ -312,7 +315,7 @@ function Chat({
                     disabled={loading || quotaExceeded}
                     onChange={(event) => setInput(event.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder={quotaExceeded ? "⚠️ Daily limit reached" : loading ? "Analyzing..." : "Ask anything about current affairs or UPSC..."}
+                    placeholder={quotaExceeded ? "⚠️ Daily limit reached" : loading ? "Analyzing..." : chatMode === "upsc" ? "Ask UPSC-focused questions..." : "Ask anything about current affairs or news..."}
                     rows={1}
                     className="max-h-[180px] min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2 text-white outline-none placeholder:text-white/20 disabled:opacity-50"
                     />

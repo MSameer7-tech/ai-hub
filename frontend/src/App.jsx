@@ -267,7 +267,18 @@ export default function App() {
           onSearchChange={setSearch}
         />
 
-        <div className="flex min-h-0 flex-1 flex-col">
+        <div className="relative flex min-h-0 flex-1 flex-col">
+          <div className="absolute right-6 top-6 z-50">
+            <button
+                type="button"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm transition-all hover:scale-110 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:backdrop-blur-md"
+                title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+                {theme === "dark" ? "🌞" : "🌙"}
+            </button>
+          </div>
+
           {page === "chat" && (
             <Chat
               messages={currentMessages}
