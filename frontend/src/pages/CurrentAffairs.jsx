@@ -88,7 +88,7 @@ function CurrentAffairs({ theme, setTheme }) {
   const handleRefresh = async () => {
     if (loading || cooldown > 0) return;
     await fetchArticles(true);
-    setCooldown(10); // Minimal safety cooldown
+    setCooldown(120); // Safety cooldown for manual refresh
   };
 
   // Initial Load Only - Disabled to ensure 100% manual control
