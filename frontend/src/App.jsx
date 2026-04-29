@@ -252,7 +252,7 @@ export default function App() {
 
   return (
     <div className={theme === "dark" ? "dark" : ""}>
-      <div className="flex min-h-screen w-full flex-col overflow-x-hidden bg-white text-gray-900 transition-colors duration-300 dark:bg-black dark:text-white">
+      <div className="flex h-screen w-full flex-col overflow-x-hidden bg-white text-gray-900 transition-colors duration-300 dark:bg-black dark:text-white">
         
         {/* Mobile Header */}
         <div className="flex items-center justify-between border-b border-gray-200 bg-white/80 px-4 py-3 backdrop-blur-xl md:hidden dark:border-white/5 dark:bg-black/80">
@@ -332,16 +332,17 @@ export default function App() {
             )}
             {page === "current" && <CurrentAffairs theme={theme} setTheme={setTheme} />}
             {page === "quiz" && <Quiz theme={theme} setTheme={setTheme} />}
+
+            {/* Integrated Footer (Inside Scroll/Flex Area) */}
+            <footer className="mt-auto border-t border-gray-200 pb-32 pt-6 md:pb-6 dark:border-white/5">
+              <div className="flex justify-center px-6">
+                <p className="text-center text-[10px] md:text-xs font-medium uppercase tracking-[0.3em] text-gray-400 opacity-60 transition-opacity hover:opacity-100 dark:text-white/40">
+                  Crafted by <span className="font-bold text-gray-600 dark:text-white/80">Mohammad Sameer</span>
+                </p>
+              </div>
+            </footer>
           </div>
         </div>
-
-        <footer className="border-t border-gray-200 pb-32 pt-6 md:py-6 dark:border-white/5">
-          <div className="flex justify-center px-6">
-            <p className="text-center text-[10px] md:text-xs font-medium uppercase tracking-[0.3em] text-gray-400 opacity-60 transition-opacity hover:opacity-100 dark:text-white/40">
-              Crafted by <span className="font-bold text-gray-600 dark:text-white/80">Mohammad Sameer</span>
-            </p>
-          </div>
-        </footer>
       </div>
     </div>
   );
