@@ -1,9 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 
-import { askCurrentAffairs, askArticle } from "../services/api";
-
-const CACHE_TTL = 3600;
+import { askCurrentAffairs, askArticle, BASE_URL } from "../services/api";
 
 function getCategoryTag(topic) {
   const text = `${topic.title} ${topic.summary}`.toLowerCase();
@@ -49,14 +47,13 @@ function CurrentAffairs({ theme, setTheme }) {
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [fullArticle, setFullArticle] = useState(null);
   const [isFetchingFull, setIsFetchingFull] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
   const analysisRef = useRef(null);
 
   const fetchArticles = async (isManualRefresh = false) => {
     setLoading(true);
     try {
       const timestamp = Date.now();
-      const url = `http://10.57.209.178:8000/current-affairs?ts=${timestamp}${isManualRefresh ? "&refresh=true" : ""}`;
+      const url = `${BASE_URL}/current-affairs?ts=${timestamp}${isManualRefresh ? "&refresh=true" : ""}`;
       
       console.log(`[API] Fetching articles: ${url}`);
       
@@ -93,8 +90,7 @@ function CurrentAffairs({ theme, setTheme }) {
 
   // Initial Load Only - Disabled to ensure 100% manual control
   useEffect(() => {
-    // fetchArticles(); 
-    console.log("🛠️ [UPSC-MANUAL-SYNC] Mount complete. Waiting for user to click Refresh.");
+    fetchArticles();
   }, []);
 
 
@@ -105,7 +101,7 @@ function CurrentAffairs({ theme, setTheme }) {
     setIsFetchingFull(true);
     setFullArticle(null);
     try {
-      const res = await fetch(`http://10.57.209.178:8000/news/full?url=${encodeURIComponent(url)}`, {
+      const res = await fetch(`${BASE_URL}/news/full?url=${encodeURIComponent(url)}`, {
           cache: "no-store"
       });
       const data = await res.json();
@@ -319,7 +315,7 @@ function CurrentAffairs({ theme, setTheme }) {
                   </h3>
                   
                   <p className="mb-6 md:mb-8 text-xs md:text-sm leading-relaxed text-gray-500 line-clamp-3 dark:text-neutral-400">
-                    {topic?.description || "No description"}
+                    {topic?.summary || topic?.description || "No description"}
                   </p>
                   
                   <button
@@ -506,7 +502,7 @@ function CurrentAffairs({ theme, setTheme }) {
                         <p className="mt-4 p-3 bg-white/5 rounded-xl text-xs text-gray-500 italic">{selectedArticle.description}</p>
                     </div>
                 ) : (
-                  <p className="text-gray-300 leading-relaxed text-[17px]">{selectedArticle.description}</p>
+                  <p className="text-gray-300 leading-relaxed text-[17px]">{selectedArticle.summary || selectedArticle.description}</p>
                 )}
 
 
