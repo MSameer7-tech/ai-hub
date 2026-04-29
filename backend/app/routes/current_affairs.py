@@ -77,30 +77,41 @@ def ask_article(request: AskArticleRequest) -> dict:
     # Prioritize full text if available, fallback to overview or description
     content = article.get("text") or article.get("content") or article.get("description") or "No content available."
     
-    # Truncate content to prevent token overflow while keeping high context
-    content = content[:4000]
+    # Trim content slightly more for faster processing and lower token usage
+    content = content[:3000]
+
+    # Detect if the question is analytical or factual
+    is_analytical = any(kw in question.lower() for kw in ["analyze", "significance", "why", "impact", "explain", "importance"])
 
     prompt = f"""
-You are a highly analytical Current Affairs Assistant specializing in UPSC and government exam preparation.
+You are a UPSC Current Affairs Expert. Answer the question strictly based on the article provided.
 
-TASK:
-Answer the student's question based ONLY on the provided article content.
-Do NOT use outside knowledge or hallucinate information not present in the text.
+FORMAT YOUR RESPONSE EXACTLY LIKE THIS:
 
-INSTRUCTIONS:
-1. Be direct, factual, and concise.
-2. If the answer is not found in the article, explicitly state: "This information is not mentioned in the article provided."
-3. Structure your response clearly using bullet points for key facts if helpful.
+Answer:
+(2–3 lines direct, crisp answer)
 
-ARTICLE CONTEXT:
+Key Points:
+- [Fact 1]
+- [Fact 2]
+- [Fact 3]
+
+{ "Significance:\n- [Analytical Point 1]\n- [Analytical Point 2]" if is_analytical else "" }
+
+STRICT RULES:
+1. Do NOT use outside information.
+2. Do NOT write long paragraphs.
+3. Be exam-ready and concise.
+4. If information is missing, say "Data not in article." once at the end.
+
+ARTICLE:
 Title: {article.get('title', 'No Title')}
-Content: {content}
+{content}
 
 QUESTION:
 {question}
-
-RESPONSE:
 """
+
 
 
     try:
