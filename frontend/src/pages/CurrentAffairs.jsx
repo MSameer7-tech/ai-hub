@@ -53,41 +53,57 @@ function CurrentAffairs() {
 
   const fetchArticles = async (isManualRefresh = false) => {
     setLoading(true);
-
     try {
-      console.log("Fetching articles...");
-      const url = `http://127.0.0.1:8000/current-affairs${isManualRefresh ? "?refresh=true" : ""}`;
+      const timestamp = Date.now();
+      const url = `http://127.0.0.1:8000/current-affairs?ts=${timestamp}${isManualRefresh ? "&refresh=true" : ""}`;
+      
+      console.log(`[API] Fetching articles: ${url}`);
       
       const res = await fetch(url, {
         cache: "no-store",
         headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
         }
       });
       
       const data = await res.json();
 
-      if (!Array.isArray(data)) {
-        console.error("Invalid response:", data);
-        setArticles([]);
-        return;
+      if (Array.isArray(data)) {
+        setArticles(data);
+        setLastUpdated(new Date()); // Store as Date object
+      } else {
+        console.error("Invalid data format received:", data);
       }
-
-      setArticles(data);
-      setLastUpdated(new Date().toLocaleTimeString());
     } catch (err) {
       console.error("Error fetching articles:", err);
-      setArticles([
-        {
-          title: "Error",
-          summary: "Unable to load current affairs",
-        },
-      ]);
     } finally {
       setLoading(false);
     }
   };
+
+  // Manual Refresh
+  const handleRefresh = async () => {
+    if (loading || cooldown > 0) return;
+    await fetchArticles(true);
+    setCooldown(120); // Sync cooldown with auto-refresh if desired, or keep as is
+  };
+
+  // Auto-Refresh (Every 120 seconds)
+  useEffect(() => {
+    fetchArticles(); // Initial fetch
+    
+    const interval = setInterval(() => {
+      console.log("[AUTO-REFRESH] Triggering 120s cycle...");
+      fetchArticles(true);
+    }, 120000); 
+
+    return () => clearInterval(interval);
+  }, []);
+
+
+
 
   const fetchFullContent = async (url) => {
     if (!url) return;
@@ -120,32 +136,16 @@ function CurrentAffairs() {
     }
   }, []);
 
-  // Handle auto-refresh every 120 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRefreshKey(prev => prev + 1);
-    }, 120000); 
-
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    fetchArticles(refreshKey > 0);
-  }, [refreshKey]);
-
-
-
   useEffect(() => {
     if (cooldown === 0) {
       return undefined;
     }
-
     const timer = setInterval(() => {
       setCooldown((prev) => prev - 1);
     }, 1000);
-
     return () => clearInterval(timer);
   }, [cooldown]);
+
 
   useEffect(() => {
     localStorage.setItem("currentAffairsHistory", JSON.stringify(history));
@@ -233,8 +233,9 @@ function CurrentAffairs() {
           Browse summaries and ask questions grounded in the current dataset.
         </p>
         <p className="mb-5 text-sm text-gray-400 dark:text-neutral-500">
-          Last updated: {lastUpdated || "Not yet refreshed"}
+          Last updated: {lastUpdated ? lastUpdated.toLocaleTimeString() : "Not yet refreshed"}
         </p>
+
 
         <section style={{ marginBottom: "32px" }}>
           <div
