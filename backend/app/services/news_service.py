@@ -22,7 +22,7 @@ CATEGORY_MAP = {
     "economy": "inflation OR GDP OR economy OR markets",
     "tech": "AI OR startups OR innovation OR technology",
 }
-CACHE_TTL = 120
+CACHE_TTL = 3600
 NEWS_CACHE = {
     "data": {},
     "last_updated": {},

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 import { askCurrentAffairs, askArticle } from "../services/api";
 
-const REFRESH_INTERVAL = 70;
+const CACHE_TTL = 3600;
 
 function getCategoryTag(topic) {
   const text = `${topic.title} ${topic.summary}`.toLowerCase();
@@ -88,7 +88,7 @@ function CurrentAffairs({ theme, setTheme }) {
   const handleRefresh = async () => {
     if (loading || cooldown > 0) return;
     await fetchArticles(true);
-    setCooldown(120); // Sync cooldown with auto-refresh if desired, or keep as is
+    setCooldown(10); // Minimal safety cooldown
   };
 
   // Initial Load Only
