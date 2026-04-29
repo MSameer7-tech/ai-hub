@@ -38,7 +38,7 @@ function getCategoryTag(topic) {
   return "General";
 }
 
-function CurrentAffairs() {
+function CurrentAffairs({ theme, setTheme }) {
   const [articles, setArticles] = useState([]);
   const [question, setQuestion] = useState("");
   const [history, setHistory] = useState([]);
@@ -217,8 +217,8 @@ function CurrentAffairs() {
   return (
     <div className="flex-1 overflow-y-auto p-6 text-gray-800 dark:text-white">
       <div>
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-          <div>
+        <div className="mb-10 flex flex-wrap items-center justify-between gap-6">
+          <div className="flex-1">
             <h1 className="text-4xl font-black tracking-tight text-gray-900 dark:text-white">
               Current <span className="text-blue-500">Affairs</span>
             </h1>
@@ -226,25 +226,43 @@ function CurrentAffairs() {
               Browse summaries and ask questions grounded in the current dataset.
             </p>
           </div>
-          <div className="flex flex-col items-end gap-2">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
-              <svg className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              <span>{lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString()}` : "Not refreshed"}</span>
+          
+          <div className="flex items-center gap-5">
+            <div className="flex flex-col items-end gap-1.5">
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-neutral-500">
+                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>{lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString()}` : "Sync Pending"}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                    <button
+                        type="button"
+                        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                        className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 transition-all hover:scale-110 active:scale-95 dark:bg-white/5 dark:backdrop-blur-md"
+                        title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                    >
+                        <span className="text-xl">{theme === "dark" ? "☀️" : "🌙"}</span>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleRefresh}
+                        disabled={cooldown > 0 || loading}
+                        className={`group flex items-center gap-2 rounded-full border-2 px-6 py-2.5 text-xs font-black uppercase tracking-widest transition-all duration-300 ${
+                            cooldown > 0 || loading
+                            ? "border-gray-100 bg-gray-50 text-gray-300 dark:border-white/5 dark:bg-white/5"
+                            : "border-blue-500 text-blue-600 hover:bg-blue-600 hover:text-white dark:border-blue-500/50 dark:text-blue-400 dark:hover:bg-blue-600 dark:hover:text-white"
+                        }`}
+                    >
+                        {loading && (
+                            <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                        )}
+                        <span>{loading ? "Refreshing" : cooldown > 0 ? `Retry in ${cooldown}s` : "Refresh"}</span>
+                    </button>
+                </div>
             </div>
-            <button
-              type="button"
-              onClick={handleRefresh}
-              disabled={cooldown > 0 || loading}
-              className={`flex items-center gap-2 rounded-full border px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all duration-300 ${
-                cooldown > 0 || loading
-                  ? "border-gray-200 bg-gray-50 text-gray-400 dark:border-white/5 dark:bg-white/5"
-                  : "border-blue-500/50 bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white dark:text-blue-400 dark:hover:bg-blue-600 dark:hover:text-white"
-              }`}
-            >
-              {loading ? "Refreshing..." : cooldown > 0 ? `Wait ${cooldown}s` : "Refresh Now"}
-            </button>
           </div>
         </div>
 
@@ -273,15 +291,15 @@ function CurrentAffairs() {
                   className="h-full"
                 >
                   <motion.div
-                    whileHover={{ translateY: -10 }}
+                    whileHover={{ translateY: -12 }}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
                     onClick={() => setSelectedArticle(topic)}
-                    className="group flex h-full cursor-pointer flex-col rounded-[32px] border border-gray-100 bg-white p-8 shadow-sm transition-all duration-500 hover:border-blue-500/20 hover:shadow-2xl hover:shadow-blue-500/10 dark:border-white/5 dark:bg-white/[0.03] dark:backdrop-blur-xl dark:hover:border-blue-500/30"
+                    className="group flex h-full cursor-pointer flex-col rounded-[32px] border border-gray-100 bg-white p-8 shadow-sm transition-all duration-500 hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/10 dark:border-white/5 dark:bg-white/[0.03] dark:backdrop-blur-xl dark:hover:border-blue-500/40"
                   >
                   <div className="mb-6 flex items-center justify-between">
-                    <span className="rounded-full bg-blue-500 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-blue-500/30">
+                    <span className="rounded-full bg-blue-600 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-xl shadow-blue-500/40 transition-transform group-hover:scale-105">
                         {topic?.tag || getCategoryTag(topic)}
                     </span>
                   </div>
@@ -303,7 +321,7 @@ function CurrentAffairs() {
                       event.stopPropagation();
                       handleAskAboutTopic(topic);
                     }}
-                    className="mt-auto w-full rounded-2xl border-2 border-blue-500/30 py-4 text-xs font-black uppercase tracking-widest text-blue-600 transition-all duration-300 hover:bg-blue-600 hover:text-white hover:shadow-lg hover:shadow-blue-500/20 dark:text-blue-400 dark:hover:bg-blue-600 dark:hover:text-white"
+                    className="mt-auto w-full rounded-2xl border-2 border-blue-500/40 py-4 text-[10px] font-black uppercase tracking-[0.15em] text-blue-600 transition-all duration-300 hover:scale-[1.02] hover:bg-blue-600 hover:text-white hover:shadow-xl hover:shadow-blue-500/20 dark:text-blue-400 dark:hover:bg-blue-600 dark:hover:text-white"
                   >
                     Analyze for UPSC
                   </button>
@@ -314,7 +332,7 @@ function CurrentAffairs() {
           )}
         </section>
 
-        <section className="relative mt-20 rounded-[40px] border border-gray-100 bg-gray-50/50 p-10 dark:border-white/5 dark:bg-white/5 dark:backdrop-blur-3xl">
+        <section className="relative mt-12 rounded-[40px] border border-gray-100 bg-gray-50/30 p-8 dark:border-white/5 dark:bg-white/5 dark:backdrop-blur-3xl">
           <div className="absolute inset-x-0 -top-10 flex justify-center">
             <div className="h-px w-2/3 bg-gradient-to-r from-transparent via-gray-200 to-transparent dark:via-white/10" />
           </div>
@@ -323,49 +341,51 @@ function CurrentAffairs() {
             Study Deep: <span className="text-blue-500">Ask a Question</span>
           </h2>
 
-          <div className="relative mb-10 flex flex-col gap-4 md:flex-row md:items-end">
+          <div className="relative mb-8 flex flex-col gap-4 md:flex-row md:items-stretch">
             <textarea
               value={question}
               onChange={(event) => setQuestion(event.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Ask anything about the topics above..."
-              rows={2}
-              className="flex-1 resize-none rounded-[28px] border border-gray-200 bg-white px-6 py-4 text-base text-gray-900 shadow-sm outline-none transition-all placeholder:text-gray-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-gray-700 dark:bg-[#111827]/50 dark:text-white dark:placeholder:text-white/20"
+              rows={1}
+              className="flex-1 resize-none rounded-2xl border border-gray-200 bg-white px-6 py-4 text-base text-gray-900 shadow-sm outline-none transition-all placeholder:text-gray-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-gray-700 dark:bg-[#111827]/50 dark:text-white dark:placeholder:text-white/20"
             />
             <button
               type="button"
               onClick={handleAskQuestion}
               disabled={!question.trim() || isAsking}
-              className={`rounded-2xl px-10 py-4 text-sm font-black uppercase tracking-widest transition-all duration-300 ${
+              className={`rounded-2xl px-10 py-4 text-xs font-black uppercase tracking-widest transition-all duration-300 ${
                 !question.trim() || isAsking
-                  ? "bg-gray-200 text-gray-400 dark:bg-white/10 dark:text-neutral-600"
+                  ? "bg-gray-100 text-gray-300 dark:bg-white/5 dark:text-neutral-700"
                   : "bg-blue-600 text-white shadow-lg shadow-blue-600/20 hover:scale-105 hover:bg-blue-700 active:scale-95"
               }`}
             >
-              {isAsking ? "Analyzing..." : "Ask AI"}
+              {isAsking ? "Wait..." : "Ask AI"}
             </button>
           </div>
 
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-5">
             {history.length === 0 ? (
-              <div className="rounded-[28px] border border-dashed border-gray-200 bg-gray-50 p-10 text-center dark:border-white/10 dark:bg-white/5">
-                <p className="text-sm font-medium text-gray-400 uppercase tracking-[0.2em]">Your conversation history will appear here</p>
+              <div className="rounded-[32px] border border-dashed border-gray-200 bg-gray-50/50 p-10 text-center dark:border-white/5 dark:bg-white/5">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 dark:text-neutral-600">Your conversation history will appear here</p>
               </div>
             ) : (
               history.map((item, i) => (
                 <div
                   key={i}
-                  className="rounded-[32px] border border-gray-100 bg-white p-8 shadow-sm transition-all dark:border-white/5 dark:bg-[#111827]/80 dark:backdrop-blur-xl"
+                  className="rounded-[32px] border border-gray-100 bg-white p-8 shadow-sm transition-all hover:shadow-md dark:border-white/5 dark:bg-[#111827]/80 dark:backdrop-blur-xl"
                 >
-                  <div className="mb-4 flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-blue-500" />
-                    <span className="text-xs font-black uppercase tracking-widest text-blue-500">Analysis Session</span>
+                  <div className="mb-5 flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-500">Analysis Session</span>
                   </div>
-                  <p className="mb-4 text-base font-bold text-gray-900 dark:text-white">
-                    <span className="mr-2 text-blue-500">Q:</span> {item.q}
+                  <p className="mb-4 text-base font-bold leading-relaxed text-gray-900 dark:text-white">
+                    <span className="mr-3 text-sm font-black uppercase text-blue-600 dark:text-blue-400">Q:</span> 
+                    {item.q}
                   </p>
-                  <p className="text-base leading-relaxed text-gray-600 dark:text-neutral-300">
-                    <span className="mr-2 font-black text-blue-500">A:</span> {item.a}
+                  <p className="text-[15px] leading-relaxed text-gray-600 dark:text-neutral-300">
+                    <span className="mr-3 text-sm font-black uppercase text-purple-600 dark:text-purple-400">A:</span> 
+                    {item.a}
                   </p>
                 </div>
               ))

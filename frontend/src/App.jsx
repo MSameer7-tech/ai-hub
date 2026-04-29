@@ -270,14 +270,16 @@ export default function App() {
 
         <div className="relative flex min-h-0 flex-1 flex-col">
           <div className="absolute right-6 top-6 z-50">
-            <button
-                type="button"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 transition-all hover:scale-110 active:scale-95 dark:bg-white/5 dark:backdrop-blur-md"
-                title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            >
-                <span className="text-xl">{theme === "dark" ? "☀️" : "🌙"}</span>
-            </button>
+            {page !== "current" && (
+              <button
+                  type="button"
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 transition-all hover:scale-110 active:scale-95 dark:bg-white/5 dark:backdrop-blur-md"
+                  title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              >
+                  <span className="text-xl">{theme === "dark" ? "☀️" : "🌙"}</span>
+              </button>
+            )}
           </div>
 
           {page === "chat" && (
@@ -291,7 +293,7 @@ export default function App() {
               renameChat={renameChat}
             />
           )}
-          {page === "current" && <CurrentAffairs />}
+          {page === "current" && <CurrentAffairs theme={theme} setTheme={setTheme} />}
           {page === "quiz" && <Quiz />}
         </div>
       </div>
