@@ -18,11 +18,8 @@
 
 ## 🎬 Demo
 <p align="center">
-  <img src="https://via.placeholder.com/900x450.png?text=Add+Demo+GIF+Here" width="90%" alt="AI Hub Demo" />
+  <img src="assets/demo.webp" width="90%" alt="AI Hub Demo" />
 </p>
-
-> [!TIP]
-> Replace the placeholder above with a real screen recording GIF (using Screen Studio, OBS, or Kap) to make the project stand out to recruiters!
 
 ---
 
