@@ -16,9 +16,10 @@
 
 ---
 
-## 🎬 Demo
+Experience AI Hub in action — chat, explore news, and test your knowledge.
+
 <p align="center">
-  <img src="assets/demo.webp" width="90%" alt="AI Hub Demo" />
+  <img src="assets/demo.gif" width="85%" alt="AI Hub Demo" />
 </p>
 
 ---
