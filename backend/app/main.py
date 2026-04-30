@@ -1,11 +1,31 @@
 import os
+import sys
+
+print("STARTING APP...", flush=True)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routes.chat import router as chat_router
-from app.routes.current_affairs import router as current_affairs_router
-from app.routes.quiz import router as quiz_router
+try:
+    from app.routes.chat import router as chat_router
+    print("chat_router loaded", flush=True)
+except Exception as e:
+    print("chat_router FAILED:", e, flush=True)
+    raise
+
+try:
+    from app.routes.current_affairs import router as current_affairs_router
+    print("current_affairs_router loaded", flush=True)
+except Exception as e:
+    print("current_affairs_router FAILED:", e, flush=True)
+    raise
+
+try:
+    from app.routes.quiz import router as quiz_router
+    print("quiz_router loaded", flush=True)
+except Exception as e:
+    print("quiz_router FAILED:", e, flush=True)
+    raise
 
 
 def _parse_cors_origins() -> list[str]:
