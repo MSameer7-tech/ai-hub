@@ -5,4 +5,5 @@ python-dotenv
 groq
 google-genai
 newspaper3k
+lxml_html_clean
 pydantic
